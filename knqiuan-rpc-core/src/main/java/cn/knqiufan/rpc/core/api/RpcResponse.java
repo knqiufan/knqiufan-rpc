@@ -17,6 +17,9 @@ public class RpcResponse<T> {
    */
   private T data;
 
+  private Exception ex;
+
+
   public RpcResponse() {
   }
 
@@ -39,5 +42,13 @@ public class RpcResponse<T> {
 
   public void setStatus(boolean status) {
     this.status = status;
+  }
+
+  public Exception getEx() {
+    return ex;
+  }
+
+  public void setEx(Exception ex) {
+    this.ex = ex;
   }
 }

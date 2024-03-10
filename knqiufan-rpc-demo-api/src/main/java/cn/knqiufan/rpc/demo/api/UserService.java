@@ -8,5 +8,7 @@ package cn.knqiufan.rpc.demo.api;
  * @date 2024/3/8 21:03
  */
 public interface UserService {
-  User findById(Integer id);
+  User findById(int id);
+
+  int getById(int id);
 }

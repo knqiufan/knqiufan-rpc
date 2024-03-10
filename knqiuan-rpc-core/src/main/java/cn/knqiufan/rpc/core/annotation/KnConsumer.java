@@ -3,15 +3,15 @@ package cn.knqiufan.rpc.core.annotation;
 import java.lang.annotation.*;
 
 /**
- * 服务提供者
+ * 服务消费者
  *
  * @author knqiufan
  * @version 1.0.0
- * @date 2024/3/8 21:21
+ * @date 2024/3/9 9:54
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
+@Target(ElementType.FIELD)
 @Inherited
-public @interface KnProvider {
+public @interface KnConsumer {
 }

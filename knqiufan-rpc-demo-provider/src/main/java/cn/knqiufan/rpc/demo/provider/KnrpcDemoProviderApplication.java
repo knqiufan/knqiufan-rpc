@@ -46,16 +46,16 @@ public class KnrpcDemoProviderApplication {
   }
 
 
-  @Bean
-  ApplicationRunner providerRun() {
-    return x -> {
-      RpcRequest rpcRequest = new RpcRequest();
-      rpcRequest.setService("cn.knqiufan.rpc.demo.api.UserService");
-      rpcRequest.setMethod("findById");
-      rpcRequest.setArgs(new Object[]{100});
-
-      RpcResponse invoke = invoke(rpcRequest);
-      System.out.println("return: " + invoke.getData());
-    };
-  }
+  // @Bean
+  // ApplicationRunner providerRun() {
+  //   return x -> {
+  //     RpcRequest rpcRequest = new RpcRequest();
+  //     rpcRequest.setService("cn.knqiufan.rpc.demo.api.UserService");
+  //     rpcRequest.setMethod("findById");
+  //     rpcRequest.setArgs(new Object[]{100});
+  //
+  //     RpcResponse invoke = invoke(rpcRequest);
+  //     System.out.println("return: " + invoke.getData());
+  //   };
+  // }
 }

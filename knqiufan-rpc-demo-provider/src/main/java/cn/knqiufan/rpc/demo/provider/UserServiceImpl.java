@@ -16,7 +16,12 @@ import org.springframework.stereotype.Component;
 @KnProvider
 public class UserServiceImpl implements UserService {
   @Override
-  public User findById(Integer id) {
+  public User findById(int id) {
     return new User(id, "knqiufan-" + System.currentTimeMillis());
+  }
+
+  @Override
+  public int getById(int id) {
+    return id;
   }
 }

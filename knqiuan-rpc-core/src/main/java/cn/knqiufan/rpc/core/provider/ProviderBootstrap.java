@@ -26,21 +26,9 @@ public class ProviderBootstrap implements ApplicationContextAware {
 
   private Map<String, Object> skeleton = new HashMap<>();
 
-  public ApplicationContext getApplicationContext() {
-    return applicationContext;
-  }
-
   @Override
   public void setApplicationContext(ApplicationContext applicationContext) {
     this.applicationContext = applicationContext;
-  }
-
-  public Map<String, Object> getSkeleton() {
-    return skeleton;
-  }
-
-  public void setSkeleton(Map<String, Object> skeleton) {
-    this.skeleton = skeleton;
   }
 
   @PostConstruct
@@ -57,16 +45,20 @@ public class ProviderBootstrap implements ApplicationContextAware {
   }
 
   public RpcResponse invoke(RpcRequest request) {
+    RpcResponse rpcResponse = new RpcResponse();
     Object bean = skeleton.get(request.getService());
     try {
       Method method = findMethod(bean.getClass(), request.getMethod());
       Object result = method.invoke(bean, request.getArgs());
-      return new RpcResponse(true, result);
+      rpcResponse.setStatus(true);
+      rpcResponse.setData(request);
     } catch (InvocationTargetException e) {
-      throw new RuntimeException(e);
+      // 反射目标异常
+      rpcResponse.setEx(new RuntimeException(e.getTargetException().getMessage()));
     } catch (IllegalAccessException e) {
-      throw new RuntimeException(e);
+      rpcResponse.setEx(new RuntimeException(e.getMessage()));
     }
+    return rpcResponse;
   }
 
   private Method findMethod(Class<?> aClass, String methodNaem) {
