@@ -30,8 +30,8 @@ public class KnrpcDemoConsumerApplication {
   @KnConsumer
   OrderService orderService;
 
-  @Autowired
-  Demo demo;
+  // @Autowired
+  // Demo demo;
 
   public static void main(String[] args) {
     SpringApplication.run(KnrpcDemoConsumerApplication.class, args);
