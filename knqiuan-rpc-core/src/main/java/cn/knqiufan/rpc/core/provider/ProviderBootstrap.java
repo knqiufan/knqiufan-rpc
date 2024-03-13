@@ -51,7 +51,7 @@ public class ProviderBootstrap implements ApplicationContextAware {
       Method method = findMethod(bean.getClass(), request.getMethod());
       Object result = method.invoke(bean, request.getArgs());
       rpcResponse.setStatus(true);
-      rpcResponse.setData(request);
+      rpcResponse.setData(result);
     } catch (InvocationTargetException e) {
       // 反射目标异常
       rpcResponse.setEx(new RuntimeException(e.getTargetException().getMessage()));

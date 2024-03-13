@@ -6,7 +6,6 @@ import cn.knqiufan.rpc.demo.api.Order;
 import cn.knqiufan.rpc.demo.api.OrderService;
 import cn.knqiufan.rpc.demo.api.User;
 import cn.knqiufan.rpc.demo.api.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -30,9 +29,6 @@ public class KnrpcDemoConsumerApplication {
   @KnConsumer
   OrderService orderService;
 
-  // @Autowired
-  // Demo demo;
-
   public static void main(String[] args) {
     SpringApplication.run(KnrpcDemoConsumerApplication.class, args);
   }
@@ -43,13 +39,10 @@ public class KnrpcDemoConsumerApplication {
       User user = userService.findById(1);
       System.out.println(user);
       userService.toString();
-      // demo.test();
 
       Order order = orderService.findById(2);
       System.out.println(order);
 
-      // Order order2 = orderService.findById(404);
-      // System.out.println(order2);
     };
   }
 }

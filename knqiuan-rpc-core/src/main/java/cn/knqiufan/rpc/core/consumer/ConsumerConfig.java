@@ -22,7 +22,7 @@ public class ConsumerConfig {
   }
 
   @Bean
-  @Order(Integer.MAX_VALUE)
+  @Order(Integer.MIN_VALUE)
   public ApplicationRunner consumerBootstrapRunner(@Autowired ConsumerBootstrap consumerBootstrap) {
     return x -> {
       consumerBootstrap.start();
