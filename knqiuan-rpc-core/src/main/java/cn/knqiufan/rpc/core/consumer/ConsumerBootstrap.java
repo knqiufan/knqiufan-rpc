@@ -32,8 +32,9 @@ public class ConsumerBootstrap implements ApplicationContextAware {
   }
 
   /**
-   * 创建代理类
+   * 创建代理类 - @PostConstruct 中不能使用 getBean
    */
+  // @PostConstruct
   public void start() {
     // 获取所有bean定义的名字
     String[] beanDefinitionNames = applicationContext.getBeanDefinitionNames();
@@ -44,12 +45,12 @@ public class ConsumerBootstrap implements ApplicationContextAware {
       List<Field> annotationFields = findAnnotationField(bean.getClass());
       // 遍历并生成代理
       annotationFields.forEach(field -> {
-        try{
+        try {
           Class<?> service = field.getType();
           // 获取接口类型的全限定名称
           String serviceName = service.getCanonicalName();
           Object consumer = stub.get(serviceName);
-          if(consumer == null) {
+          if (consumer == null) {
             consumer = createConsumer(service);
           }
           field.setAccessible(true);
@@ -70,7 +71,7 @@ public class ConsumerBootstrap implements ApplicationContextAware {
     while (aClass != null) {
       Field[] fields = aClass.getDeclaredFields();
       for (Field field : fields) {
-        if(field.isAnnotationPresent(KnConsumer.class)) {
+        if (field.isAnnotationPresent(KnConsumer.class)) {
           resultField.add(field);
         }
       }
