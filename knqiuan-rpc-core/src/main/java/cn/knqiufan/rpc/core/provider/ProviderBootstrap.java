@@ -4,7 +4,6 @@ import cn.knqiufan.rpc.core.annotation.KnProvider;
 import cn.knqiufan.rpc.core.api.RpcRequest;
 import cn.knqiufan.rpc.core.api.RpcResponse;
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
@@ -45,6 +44,9 @@ public class ProviderBootstrap implements ApplicationContextAware {
   }
 
   public RpcResponse invoke(RpcRequest request) {
+    if (isObjectBaseMethod(request.getMethod())) {
+      return null;
+    }
     RpcResponse rpcResponse = new RpcResponse();
     Object bean = skeleton.get(request.getService());
     try {
@@ -61,9 +63,16 @@ public class ProviderBootstrap implements ApplicationContextAware {
     return rpcResponse;
   }
 
+  /**
+   * 判断是否为 Object 基础方法
+   */
+  private boolean isObjectBaseMethod(String methodName) {
+    return methodName.equals("toString") || methodName.equals("hashCode");
+  }
+
   private Method findMethod(Class<?> aClass, String methodNaem) {
     for (Method method : aClass.getMethods()) {
-      if(method.getName().equals(methodNaem)) {
+      if (method.getName().equals(methodNaem)) {
         return method;
       }
     }

@@ -38,7 +38,14 @@ public class KnrpcDemoConsumerApplication {
     return x -> {
       User user = userService.findById(1);
       System.out.println(user);
-      userService.toString();
+
+      User maidou = userService.findById(2, "maidou");
+      System.out.println(maidou);
+      // System.out.println(userService.getById(22));
+      // System.out.println(userService.toString());
+      // System.out.println(userService.getDouble(33));
+      // System.out.println(userService.isTrue(4));
+      // System.out.println(userService.getList());
 
       Order order = orderService.findById(2);
       System.out.println(order);

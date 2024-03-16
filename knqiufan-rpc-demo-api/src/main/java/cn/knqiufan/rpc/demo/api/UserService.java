@@ -1,5 +1,7 @@
 package cn.knqiufan.rpc.demo.api;
 
+import java.util.List;
+
 /**
  * 类描述
  *
@@ -10,5 +12,13 @@ package cn.knqiufan.rpc.demo.api;
 public interface UserService {
   User findById(int id);
 
+  User findById(int id, String name);
+
   int getById(int id);
+
+  boolean isTrue(int id);
+
+  double getDouble(int id);
+
+  List<User> getList();
 }
