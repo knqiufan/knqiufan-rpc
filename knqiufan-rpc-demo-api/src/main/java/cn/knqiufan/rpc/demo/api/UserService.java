@@ -16,9 +16,19 @@ public interface UserService {
 
   int getById(int id);
 
+  long getByLongId(long id);
+
+  long getByUser(User user);
+
   boolean isTrue(int id);
 
   double getDouble(int id);
 
   List<User> getList();
+
+  int[] getIds();
+
+  long[] getLongIds();
+
+  int[] getIdsByIds(int[] i);
 }

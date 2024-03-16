@@ -2,7 +2,6 @@ package cn.knqiufan.rpc.consumer;
 
 import cn.knqiufan.rpc.core.annotation.KnConsumer;
 import cn.knqiufan.rpc.core.consumer.ConsumerConfig;
-import cn.knqiufan.rpc.demo.api.Order;
 import cn.knqiufan.rpc.demo.api.OrderService;
 import cn.knqiufan.rpc.demo.api.User;
 import cn.knqiufan.rpc.demo.api.UserService;
@@ -11,6 +10,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+
+import java.util.Arrays;
 
 /**
  * 类描述
@@ -36,19 +37,24 @@ public class KnrpcDemoConsumerApplication {
   @Bean
   public ApplicationRunner consumerRunner() {
     return x -> {
+      System.out.println(userService.getByUser(new User(1,"knqiufan")));
+      System.out.println(userService.getByLongId(1));
       User user = userService.findById(1);
       System.out.println(user);
 
       User maidou = userService.findById(2, "maidou");
       System.out.println(maidou);
-      // System.out.println(userService.getById(22));
-      // System.out.println(userService.toString());
-      // System.out.println(userService.getDouble(33));
-      // System.out.println(userService.isTrue(4));
-      // System.out.println(userService.getList());
+      System.out.println(userService.getById(22));
+      System.out.println(userService.toString());
+      System.out.println(userService.getDouble(33));
+      System.out.println(userService.isTrue(4));
+      System.out.println(userService.getList());
+      System.out.println(Arrays.toString(userService.getIds()));
+      System.out.println(Arrays.toString(userService.getLongIds()));
+      System.out.println(Arrays.toString(userService.getIdsByIds(new int[]{99, 55})));
 
-      Order order = orderService.findById(2);
-      System.out.println(order);
+      // Order order = orderService.findById(2);
+      // System.out.println(order);
 
     };
   }

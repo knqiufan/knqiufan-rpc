@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 类描述
+ * 测试类
  *
  * @author knqiufan
  * @version 1.0.0
@@ -34,6 +34,16 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  public long getByLongId(long id) {
+    return id;
+  }
+
+  @Override
+  public long getByUser(User user) {
+    return user.getId().longValue();
+  }
+
+  @Override
   public boolean isTrue(int id) {
     return id == 33;
   }
@@ -45,9 +55,24 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public List<User> getList() {
-    return new ArrayList<>(){{
+    return new ArrayList<>() {{
       add(new User(1, "knqiufan"));
       add(new User(2, "maidou"));
     }};
+  }
+
+  @Override
+  public int[] getIds() {
+    return new int[]{1, 2};
+  }
+
+  @Override
+  public long[] getLongIds() {
+    return new long[]{4, 3, 6};
+  }
+
+  @Override
+  public int[] getIdsByIds(int[] i) {
+    return i;
   }
 }

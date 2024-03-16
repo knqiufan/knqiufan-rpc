@@ -3,6 +3,7 @@ package cn.knqiufan.rpc.core.consumer;
 import cn.knqiufan.rpc.core.api.RpcRequest;
 import cn.knqiufan.rpc.core.api.RpcResponse;
 import cn.knqiufan.rpc.core.util.MethodUtil;
+import cn.knqiufan.rpc.core.util.TypeUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import okhttp3.*;
@@ -42,25 +43,12 @@ public class KnInvocationHandler implements InvocationHandler {
 
     RpcResponse rpcResponse = post(rpcRequest);
     if (rpcResponse.isStatus()) {
-      // TODO: 处理各种类型，包括基本类型、数组类型、对象等。
-      Object data = rpcResponse.getData();
-      if(data instanceof JSONObject resultJson) {
-        return resultJson.toJavaObject(method.getReturnType());
-      } else {
-        return data;
-      }
-
+      // 处理各种类型，包括基本类型、数组类型、对象等。
+      return TypeUtil.cast(rpcResponse.getData(), method.getReturnType());
     } else {
       Exception ex = rpcResponse.getEx();
       throw new RuntimeException(ex);
     }
-  }
-
-  /**
-   * 判断是否为 Object 基础方法
-   */
-  private boolean isObjectBaseMethod(String methodName) {
-    return methodName.equals("toString") || methodName.equals("hashCode");
   }
 
   // 三种方法：OkHttpClient URLConnection HttpClient

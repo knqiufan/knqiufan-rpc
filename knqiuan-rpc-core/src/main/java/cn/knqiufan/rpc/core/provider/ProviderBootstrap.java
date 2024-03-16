@@ -5,6 +5,7 @@ import cn.knqiufan.rpc.core.api.RpcRequest;
 import cn.knqiufan.rpc.core.api.RpcResponse;
 import cn.knqiufan.rpc.core.meta.ProviderMeta;
 import cn.knqiufan.rpc.core.util.MethodUtil;
+import cn.knqiufan.rpc.core.util.TypeUtil;
 import jakarta.annotation.PostConstruct;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -50,8 +51,9 @@ public class ProviderBootstrap implements ApplicationContextAware {
 
   /**
    * 设置桩子
+   *
    * @param knProviderBean 被 KnProvider 注解的 Bean
-   * @param anInterface 接口类
+   * @param anInterface    接口类
    */
   private void setSkeleton(Object knProviderBean, Class<?> anInterface) {
     for (Method method : anInterface.getMethods()) {
@@ -73,7 +75,9 @@ public class ProviderBootstrap implements ApplicationContextAware {
     List<ProviderMeta> providerMetas = skeleton.get(request.getService());
     try {
       ProviderMeta providerMeta = findProviderMeta(providerMetas, request.getMethodSign());
-      Object result = providerMeta.getMethod().invoke(providerMeta.getServiceImpl(), request.getArgs());
+      // 需要对 request.getArgs() 进行类型转换。fastJson 序列化会改变参数类型
+      Object[] args = processArgs(request.getArgs(), providerMeta.getMethod().getParameterTypes());
+      Object result = providerMeta.getMethod().invoke(providerMeta.getServiceImpl(), args);
       rpcResponse.setStatus(true);
       rpcResponse.setData(result);
     } catch (InvocationTargetException e) {
@@ -83,6 +87,22 @@ public class ProviderBootstrap implements ApplicationContextAware {
       rpcResponse.setEx(new RuntimeException(e.getMessage()));
     }
     return rpcResponse;
+  }
+
+  /**
+   * 处理参数，对必要参数进行类型转换
+   *
+   * @param args           反序列化后的参数
+   * @param parameterTypes 原参数类型列表
+   * @return 原参数
+   */
+  private Object[] processArgs(Object[] args, Class<?>[] parameterTypes) {
+    if (args == null || args.length == 0) return args;
+    Object[] actual = new Object[args.length];
+    for (int i = 0; i < args.length; i++) {
+      actual[i] = TypeUtil.cast(args[i], parameterTypes[i]);
+    }
+    return actual;
   }
 
 
