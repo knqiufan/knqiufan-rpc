@@ -35,4 +35,12 @@ public class Order {
   public void setAmount(Float amount) {
     this.amount = amount;
   }
+
+  @Override
+  public String toString() {
+    return "Order{" +
+            "id=" + id +
+            ", amount=" + amount +
+            '}';
+  }
 }

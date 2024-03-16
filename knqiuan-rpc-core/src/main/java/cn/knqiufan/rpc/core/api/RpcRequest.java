@@ -15,18 +15,18 @@ public class RpcRequest {
   /**
    * 方法
    */
-  private String method;
+  private String methodSign;
   /**
    * 参数
    */
   private Object[] args;
 
-  public String getMethod() {
-    return method;
+  public String getMethodSign() {
+    return methodSign;
   }
 
-  public void setMethod(String method) {
-    this.method = method;
+  public void setMethodSign(String methodSign) {
+    this.methodSign = methodSign;
   }
 
   public Object[] getArgs() {

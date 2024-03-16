@@ -2,6 +2,7 @@ package cn.knqiufan.rpc.core.consumer;
 
 import cn.knqiufan.rpc.core.api.RpcRequest;
 import cn.knqiufan.rpc.core.api.RpcResponse;
+import cn.knqiufan.rpc.core.util.MethodUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import okhttp3.*;
@@ -29,24 +30,14 @@ public class KnInvocationHandler implements InvocationHandler {
 
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-    // 处理 Object 基础方法
-    // Class<?> declaringClass = method.getDeclaringClass();
-    // if(declaringClass == Object.class) {
-    //   return method.invoke(proxy, args);
-    // } else {
-    //   Object o = handleObjectBaseMethod(proxy, method, args);
-    //   if(o != null) {
-    //     return o;
-    //   }
-    // }
 
-    if (isObjectBaseMethod(method.getName())) {
+    if (MethodUtil.checkObjectBaseMethod(method)) {
       return null;
     }
 
     RpcRequest rpcRequest = new RpcRequest();
     rpcRequest.setService(service.getCanonicalName());
-    rpcRequest.setMethod(method.getName());
+    rpcRequest.setMethodSign(MethodUtil.methodSign(method));
     rpcRequest.setArgs(args);
 
     RpcResponse rpcResponse = post(rpcRequest);
@@ -71,25 +62,6 @@ public class KnInvocationHandler implements InvocationHandler {
   private boolean isObjectBaseMethod(String methodName) {
     return methodName.equals("toString") || methodName.equals("hashCode");
   }
-
-  // /**
-  //  * 处理 Object 基础方法
-  //  */
-  // private Object handleObjectBaseMethod(Object invoke, Method method, Object[] args) {
-  //   // 获取方法参数列表
-  //   Class<?>[] parameterTypes = method.getParameterTypes();
-  //   if(parameterTypes.length == 0) {
-  //     if("toString".equals(method.getName())) {
-  //       return invoke.toString();
-  //     }
-  //     if("hashCode".equals(method.getName())) {
-  //       return invoke.hashCode();
-  //     }
-  //   } else if(parameterTypes.length == 1 && "equals".equals(method.getName())) {
-  //     return invoke.equals(args[0]);
-  //   }
-  //   return null;
-  // }
 
   // 三种方法：OkHttpClient URLConnection HttpClient
   OkHttpClient client = new OkHttpClient.Builder()
