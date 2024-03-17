@@ -6,6 +6,7 @@ import cn.knqiufan.rpc.core.api.RpcResponse;
 import cn.knqiufan.rpc.core.meta.ProviderMeta;
 import cn.knqiufan.rpc.core.util.MethodUtil;
 import cn.knqiufan.rpc.core.util.TypeUtil;
+import com.alibaba.fastjson.JSONObject;
 import jakarta.annotation.PostConstruct;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -70,7 +71,7 @@ public class ProviderBootstrap implements ApplicationContextAware {
   }
 
   public RpcResponse invoke(RpcRequest request) {
-
+    System.out.println("========> request: " + JSONObject.toJSONString(request));
     RpcResponse rpcResponse = new RpcResponse();
     List<ProviderMeta> providerMetas = skeleton.get(request.getService());
     try {
@@ -86,6 +87,7 @@ public class ProviderBootstrap implements ApplicationContextAware {
     } catch (IllegalAccessException e) {
       rpcResponse.setEx(new RuntimeException(e.getMessage()));
     }
+    System.out.println("========> response: " + JSONObject.toJSONString(rpcResponse));
     return rpcResponse;
   }
 

@@ -5,8 +5,8 @@ import cn.knqiufan.rpc.demo.api.User;
 import cn.knqiufan.rpc.demo.api.UserService;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 测试类
@@ -59,6 +59,47 @@ public class UserServiceImpl implements UserService {
       add(new User(1, "knqiufan"));
       add(new User(2, "maidou"));
     }};
+  }
+
+  @Override
+  public List<User> getListByMap(Map<String, Integer> map) {
+    return new ArrayList<>() {{
+      add(new User(343434, "33"));
+    }};
+  }
+
+  @Override
+  public List<String> getStringListByMap(Map<String, User> map) {
+    return new ArrayList<>(map.keySet());
+  }
+
+  @Override
+  public Map<String, User> getMapListByMap(Map<String, User> map) {
+    return map;
+  }
+
+  @Override
+  public Map<String, Integer> getMap() {
+    return new HashMap<>() {{
+      put("1", 23);
+    }};
+  }
+
+  @Override
+  public Map<String, Long> getMapByList(List<User> users) {
+    Map<String, Long> map = new HashMap<>();
+    users.forEach(u -> map.put(u.getName(), u.getId().longValue()));
+    return map;
+  }
+
+  @Override
+  public List<String> getStringListByList(List<String> strList) {
+    return strList;
+  }
+
+  @Override
+  public int[] getIdsByUsers(User[] user) {
+    return new int[]{user[0].getId()};
   }
 
   @Override

@@ -11,7 +11,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 /**
  * 类描述
@@ -37,7 +39,7 @@ public class KnrpcDemoConsumerApplication {
   @Bean
   public ApplicationRunner consumerRunner() {
     return x -> {
-      System.out.println(userService.getByUser(new User(1,"knqiufan")));
+      System.out.println(userService.getByUser(new User(1, "knqiufan")));
       System.out.println(userService.getByLongId(1));
       User user = userService.findById(1);
       System.out.println(user);
@@ -52,6 +54,26 @@ public class KnrpcDemoConsumerApplication {
       System.out.println(Arrays.toString(userService.getIds()));
       System.out.println(Arrays.toString(userService.getLongIds()));
       System.out.println(Arrays.toString(userService.getIdsByIds(new int[]{99, 55})));
+
+      System.out.println(userService.getMap());
+      System.out.println(userService.getListByMap(new HashMap<>() {{
+        put("2", 4);
+      }}));
+      System.out.println(userService.getStringListByMap(new HashMap<>() {{
+        put("22", new User(88, "knqiufan"));
+      }}));
+      System.out.println(userService.getMapListByMap(new HashMap<>() {{
+        put("22", new User(88, "knqiufan"));
+      }}));
+      System.out.println(userService.getStringListByList(new ArrayList<>() {{
+        add("citrus");
+      }}));
+      System.out.println(Arrays.toString(userService.getIdsByUsers(new User[]{new User(32, "oo")})));
+
+      // System.out.println(userService.getMapByList(new ArrayList<>(){{
+      //   add(new User(3, "user"));
+      //   add(new User(54, "identify"));
+      // }}));
 
       // Order order = orderService.findById(2);
       // System.out.println(order);

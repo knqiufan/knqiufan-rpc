@@ -1,6 +1,7 @@
 package cn.knqiufan.rpc.demo.api;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 类描述
@@ -25,6 +26,20 @@ public interface UserService {
   double getDouble(int id);
 
   List<User> getList();
+
+  List<User> getListByMap(Map<String, Integer> map);
+
+  List<String> getStringListByMap(Map<String, User> map);
+
+  Map<String, User> getMapListByMap(Map<String, User> map);
+
+  Map<String, Integer> getMap();
+
+  Map<String, Long> getMapByList(List<User> users);
+
+  List<String> getStringListByList(List<String> strList);
+
+  int[] getIdsByUsers(User[] user);
 
   int[] getIds();
 

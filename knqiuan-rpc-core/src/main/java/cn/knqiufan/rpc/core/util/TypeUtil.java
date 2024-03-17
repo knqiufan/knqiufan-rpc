@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * 类描述
@@ -28,6 +29,7 @@ public class TypeUtil {
     Class<?> aClass = origin.getClass();
     // 转换的类型如果是原始对象类型的父类，直接返回原始对象
     if (type.isAssignableFrom(aClass)) {
+      // TODO: 处理 List 中带对象的问题
       return origin;
     }
     // hashMap 转对象
@@ -81,7 +83,13 @@ public class TypeUtil {
     Object resultArray = Array.newInstance(componentType, originArray.length);
     // 往数组中插入数据
     for (int i = 0; i < originArray.length; i++) {
-      Array.set(resultArray, i, originArray[i]);
+      Object originObj = originArray[i];
+      // 数组中若为对象，这么处理
+      if(originObj instanceof HashMap map) {
+        JSONObject jsonObject = new JSONObject(map);
+        originObj = jsonObject.toJavaObject(componentType);
+      }
+      Array.set(resultArray, i, originObj);
     }
     return resultArray;
   }
