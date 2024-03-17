@@ -1,6 +1,7 @@
 package cn.knqiufan.rpc.core.provider;
 
 import cn.knqiufan.rpc.core.annotation.KnProvider;
+import cn.knqiufan.rpc.core.api.RegistryCenter;
 import cn.knqiufan.rpc.core.api.RpcRequest;
 import cn.knqiufan.rpc.core.api.RpcResponse;
 import cn.knqiufan.rpc.core.meta.ProviderMeta;
@@ -8,6 +9,8 @@ import cn.knqiufan.rpc.core.util.MethodUtil;
 import cn.knqiufan.rpc.core.util.TypeUtil;
 import com.alibaba.fastjson.JSONObject;
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.LinkedMultiValueMap;
@@ -17,10 +20,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.*;
 
 /**
- * 类描述
+ * 服务提供者启动类
  *
  * @author knqiufan
  * @version 1.0.0
@@ -32,22 +37,63 @@ public class ProviderBootstrap implements ApplicationContextAware {
 
   private MultiValueMap<String, ProviderMeta> skeleton = new LinkedMultiValueMap<>();
 
+
+  String instance;
+
+  @Value("${server.port}")
+  String port;
+
   @Override
   public void setApplicationContext(ApplicationContext applicationContext) {
     this.applicationContext = applicationContext;
   }
 
+
   @PostConstruct
-  public void start() {
+  public void init() {
     Map<String, Object> provider = applicationContext.getBeansWithAnnotation(KnProvider.class);
     provider.forEach((x, y) -> System.out.println(x));
     provider.values().forEach(this::getInterface);
+  }
+
+  /**
+   * 延迟暴露，等 SpringBoot 整个上下文运行完之后再进行注册
+   */
+  public void start() {
+    instance = getInstance();
+    // 注册服务
+    skeleton.keySet().forEach(this::registerService);
+  }
+
+  @PreDestroy
+  public void stop() {
+    skeleton.keySet().forEach(this::unregisterService);
+  }
+
+  private void unregisterService(String service) {
+    RegistryCenter registryCenter = applicationContext.getBean(RegistryCenter.class);
+    registryCenter.unregister(service, instance);
+  }
+
+  private void registerService(String service) {
+    RegistryCenter registryCenter = applicationContext.getBean(RegistryCenter.class);
+    registryCenter.register(service, instance);
   }
 
   private void getInterface(Object knProviderBean) {
     for (Class<?> anInterface : knProviderBean.getClass().getInterfaces()) {
       setSkeleton(knProviderBean, anInterface);
     }
+  }
+
+  private String getInstance() {
+    String ip;
+    try {
+      ip = InetAddress.getLocalHost().getHostAddress();
+    } catch (UnknownHostException e) {
+      throw new RuntimeException(e);
+    }
+    return ip + "_" + port;
   }
 
   /**

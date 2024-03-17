@@ -3,7 +3,6 @@ package cn.knqiufan.rpc.core.cluster;
 import cn.knqiufan.rpc.core.api.LoadBalancer;
 
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -13,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @version 1.0.0
  * @date 2024/3/17 17:14
  */
-public class RoundRibonLoadBalancer<T> implements LoadBalancer<T> {
+public class RoundRobinLoadBalancer<T> implements LoadBalancer<T> {
 
   AtomicInteger index = new AtomicInteger();
 

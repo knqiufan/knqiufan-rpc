@@ -22,6 +22,9 @@ public interface RegistryCenter {
   // 拿到当前所有服务的接口
   List<String> fetchAll(String service);
 
+  // void subscribe();
+  // void heartbeat();
+
   /**
    * 默认 - 静态注册中心
    */

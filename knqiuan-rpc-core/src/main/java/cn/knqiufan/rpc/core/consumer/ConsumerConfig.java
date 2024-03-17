@@ -3,8 +3,7 @@ package cn.knqiufan.rpc.core.consumer;
 import cn.knqiufan.rpc.core.api.LoadBalancer;
 import cn.knqiufan.rpc.core.api.RegistryCenter;
 import cn.knqiufan.rpc.core.api.Router;
-import cn.knqiufan.rpc.core.cluster.RandomLoadBalancer;
-import cn.knqiufan.rpc.core.cluster.RoundRibonLoadBalancer;
+import cn.knqiufan.rpc.core.cluster.RoundRobinLoadBalancer;
 import org.junit.jupiter.api.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,7 +40,7 @@ public class ConsumerConfig {
 
   @Bean
   public LoadBalancer loadBalancer() {
-    return new RoundRibonLoadBalancer();
+    return new RoundRobinLoadBalancer();
   }
 
   @Bean
