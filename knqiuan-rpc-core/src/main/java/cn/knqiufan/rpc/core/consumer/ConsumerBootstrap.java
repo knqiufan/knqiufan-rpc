@@ -2,6 +2,7 @@ package cn.knqiufan.rpc.core.consumer;
 
 import cn.knqiufan.rpc.core.annotation.KnConsumer;
 import cn.knqiufan.rpc.core.api.LoadBalancer;
+import cn.knqiufan.rpc.core.api.RegistryCenter;
 import cn.knqiufan.rpc.core.api.Router;
 import cn.knqiufan.rpc.core.api.RpcContext;
 import org.apache.logging.log4j.util.Strings;
@@ -49,6 +50,8 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
   // @PostConstruct
   public void start() {
 
+    RegistryCenter registryCenter = applicationContext.getBean(RegistryCenter.class);
+
     RpcContext context = new RpcContext();
     context.setLoadBalancer(applicationContext.getBean(LoadBalancer.class));
     context.setRouter(applicationContext.getBean(Router.class));
@@ -74,7 +77,7 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
           String serviceName = service.getCanonicalName();
           Object consumer = stub.get(serviceName);
           if (consumer == null) {
-            consumer = createConsumer(service, context, providers);
+            consumer = createFromRegistry(service, context, registryCenter);
           }
           field.setAccessible(true);
           field.set(bean, consumer);
@@ -83,6 +86,11 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
         }
       });
     }
+  }
+
+  private Object createFromRegistry(Class<?> service, RpcContext context, RegistryCenter registryCenter) {
+    List<String> providers = registryCenter.fetchAll(service.getCanonicalName());
+    return createConsumer(service, context, providers);
   }
 
   /**

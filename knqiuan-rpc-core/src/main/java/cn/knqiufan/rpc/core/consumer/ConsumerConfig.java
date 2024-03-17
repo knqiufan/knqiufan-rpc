@@ -1,14 +1,18 @@
 package cn.knqiufan.rpc.core.consumer;
 
 import cn.knqiufan.rpc.core.api.LoadBalancer;
+import cn.knqiufan.rpc.core.api.RegistryCenter;
 import cn.knqiufan.rpc.core.api.Router;
 import cn.knqiufan.rpc.core.cluster.RandomLoadBalancer;
 import cn.knqiufan.rpc.core.cluster.RoundRibonLoadBalancer;
 import org.junit.jupiter.api.Order;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.Arrays;
 
 /**
  * 类描述
@@ -20,6 +24,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ConsumerConfig {
 
+  @Value("${knrpc.providers}")
+  String providers;
   @Bean
   ConsumerBootstrap createConsumerBootstrap() {
     return new ConsumerBootstrap();
@@ -41,5 +47,10 @@ public class ConsumerConfig {
   @Bean
   public Router router() {
     return Router.DEFAULT;
+  }
+
+  @Bean(initMethod = "start", destroyMethod = "stop")
+  public RegistryCenter registryCenter() {
+    return new RegistryCenter.StaticRegistryCenter(Arrays.asList(providers.split(",")));
   }
 }
