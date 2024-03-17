@@ -2,6 +2,7 @@ package cn.knqiufan.rpc.consumer;
 
 import cn.knqiufan.rpc.core.annotation.KnConsumer;
 import cn.knqiufan.rpc.core.consumer.ConsumerConfig;
+import cn.knqiufan.rpc.demo.api.Order;
 import cn.knqiufan.rpc.demo.api.OrderService;
 import cn.knqiufan.rpc.demo.api.User;
 import cn.knqiufan.rpc.demo.api.UserService;
@@ -70,13 +71,13 @@ public class KnrpcDemoConsumerApplication {
       }}));
       System.out.println(Arrays.toString(userService.getIdsByUsers(new User[]{new User(32, "oo")})));
 
-      // System.out.println(userService.getMapByList(new ArrayList<>(){{
-      //   add(new User(3, "user"));
-      //   add(new User(54, "identify"));
-      // }}));
+      System.out.println(userService.getMapByList(new ArrayList<>(){{
+        add(new User(3, "user"));
+        add(new User(54, "identify"));
+      }}));
 
-      // Order order = orderService.findById(2);
-      // System.out.println(order);
+      Order order = orderService.findById(2);
+      System.out.println(order);
 
     };
   }

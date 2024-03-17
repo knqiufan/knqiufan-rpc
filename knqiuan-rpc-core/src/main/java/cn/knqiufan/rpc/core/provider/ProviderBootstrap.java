@@ -15,9 +15,9 @@ import org.springframework.util.MultiValueMap;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.*;
 
 /**
  * 类描述
@@ -77,7 +77,7 @@ public class ProviderBootstrap implements ApplicationContextAware {
     try {
       ProviderMeta providerMeta = findProviderMeta(providerMetas, request.getMethodSign());
       // 需要对 request.getArgs() 进行类型转换。fastJson 序列化会改变参数类型
-      Object[] args = processArgs(request.getArgs(), providerMeta.getMethod().getParameterTypes());
+      Object[] args = processArgs(request.getArgs(), providerMeta.getMethod());
       Object result = providerMeta.getMethod().invoke(providerMeta.getServiceImpl(), args);
       rpcResponse.setStatus(true);
       rpcResponse.setData(result);
@@ -95,17 +95,37 @@ public class ProviderBootstrap implements ApplicationContextAware {
    * 处理参数，对必要参数进行类型转换
    *
    * @param args           反序列化后的参数
-   * @param parameterTypes 原参数类型列表
+   * @param method 原参数类型列表
    * @return 原参数
    */
-  private Object[] processArgs(Object[] args, Class<?>[] parameterTypes) {
+  private Object[] processArgs(Object[] args, Method method) {
+    // 获取方法参数类型
+    Type[] genericParameterTypes = method.getGenericParameterTypes();
+    Class<?>[] parameterTypes = method.getParameterTypes();
     if (args == null || args.length == 0) return args;
     Object[] actual = new Object[args.length];
     for (int i = 0; i < args.length; i++) {
+      // 若具有参数化的类型，获取实际类型
+      if(genericParameterTypes[i] instanceof ParameterizedType parameterizedType) {
+        Type actualTypeArgument = parameterizedType.getActualTypeArguments()[0];
+        // 参数类型为 ArrayList，做处理
+        if (args[i] instanceof ArrayList<?> originList) {
+          List<Object> resultList = new ArrayList<>();
+          for (Object o : originList) {
+            resultList.add(TypeUtil.cast(o, (Class<?>) actualTypeArgument));
+          }
+          actual[i] = resultList;
+          continue;
+        }
+        actual[i] = TypeUtil.cast(args[i], parameterTypes[i]);
+        continue;
+      }
       actual[i] = TypeUtil.cast(args[i], parameterTypes[i]);
+
     }
     return actual;
   }
+
 
 
   private ProviderMeta findProviderMeta(List<ProviderMeta> providerMetas, String methodSign) {

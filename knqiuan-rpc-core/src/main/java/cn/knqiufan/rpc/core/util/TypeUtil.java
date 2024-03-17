@@ -29,7 +29,6 @@ public class TypeUtil {
     Class<?> aClass = origin.getClass();
     // 转换的类型如果是原始对象类型的父类，直接返回原始对象
     if (type.isAssignableFrom(aClass)) {
-      // TODO: 处理 List 中带对象的问题
       return origin;
     }
     // hashMap 转对象
