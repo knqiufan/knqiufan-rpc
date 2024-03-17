@@ -5,6 +5,8 @@ import cn.knqiufan.rpc.core.api.LoadBalancer;
 import cn.knqiufan.rpc.core.api.RegistryCenter;
 import cn.knqiufan.rpc.core.api.Router;
 import cn.knqiufan.rpc.core.api.RpcContext;
+import cn.knqiufan.rpc.core.registry.ChangedListener;
+import cn.knqiufan.rpc.core.registry.Event;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -18,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 类描述
@@ -89,8 +92,22 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
   }
 
   private Object createFromRegistry(Class<?> service, RpcContext context, RegistryCenter registryCenter) {
-    List<String> providers = registryCenter.fetchAll(service.getCanonicalName());
+    List<String> providers = mapProviders(registryCenter.fetchAll(service.getCanonicalName()));
+    System.out.println("====> map to provider: ");
+    providers.forEach(System.out::println);
+
+    // 订阅服务
+    registryCenter.subscribe(service.getCanonicalName(), event -> {
+      providers.clear();
+      providers.addAll(mapProviders(event.getData()));
+    });
     return createConsumer(service, context, providers);
+  }
+
+  private List<String> mapProviders(List<String> nodes) {
+    return nodes.stream()
+            .map(x -> "http://" + x.replace('_', ':'))
+            .collect(Collectors.toList());
   }
 
   /**

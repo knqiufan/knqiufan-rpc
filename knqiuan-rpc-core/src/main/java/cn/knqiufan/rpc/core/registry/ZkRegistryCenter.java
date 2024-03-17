@@ -3,6 +3,7 @@ package cn.knqiufan.rpc.core.registry;
 import cn.knqiufan.rpc.core.api.RegistryCenter;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.recipes.cache.TreeCache;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
 
@@ -78,6 +79,34 @@ public class ZkRegistryCenter implements RegistryCenter {
 
   @Override
   public List<String> fetchAll(String service) {
-    return null;
+    // 服务路径：根目录下的service
+    String servicePath = "/" + service;
+    try {
+      // 获取所有子节点列表
+      return client.getChildren().forPath(servicePath);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override
+  public void subscribe(String service, ChangedListener listener) {
+    // 创建树缓存
+    final TreeCache cache = TreeCache.newBuilder(client, "/" + service)
+            .setCacheData(true)
+            .setMaxDepth(2)
+            .build();
+    // 创建监听，当前路径下的节点变动会触发
+    cache.getListenable()
+            .addListener((curator, event) -> {
+              System.out.println("zookeeper subscribe event: " + event);
+              List<String> nodes = fetchAll(service);
+              listener.fire(new Event(nodes));
+            });
+    try {
+      cache.start();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 }

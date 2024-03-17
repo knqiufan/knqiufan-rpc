@@ -4,6 +4,7 @@ import cn.knqiufan.rpc.core.api.LoadBalancer;
 import cn.knqiufan.rpc.core.api.RegistryCenter;
 import cn.knqiufan.rpc.core.api.Router;
 import cn.knqiufan.rpc.core.cluster.RoundRobinLoadBalancer;
+import cn.knqiufan.rpc.core.registry.ZkRegistryCenter;
 import org.junit.jupiter.api.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,6 +51,6 @@ public class ConsumerConfig {
 
   @Bean(initMethod = "start", destroyMethod = "stop")
   public RegistryCenter registryCenter() {
-    return new RegistryCenter.StaticRegistryCenter(Arrays.asList(providers.split(",")));
+    return new ZkRegistryCenter();
   }
 }

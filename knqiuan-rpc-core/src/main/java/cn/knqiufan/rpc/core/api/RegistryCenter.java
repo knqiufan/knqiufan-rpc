@@ -1,5 +1,7 @@
 package cn.knqiufan.rpc.core.api;
 
+import cn.knqiufan.rpc.core.registry.ChangedListener;
+
 import java.util.List;
 
 /**
@@ -22,7 +24,10 @@ public interface RegistryCenter {
   // 拿到当前所有服务的接口
   List<String> fetchAll(String service);
 
-  // void subscribe();
+  /**
+   * 订阅
+   */
+  void subscribe(String service, ChangedListener listener);
   // void heartbeat();
 
   /**
@@ -59,6 +64,11 @@ public interface RegistryCenter {
     @Override
     public List<String> fetchAll(String service) {
       return providers;
+    }
+
+    @Override
+    public void subscribe(String service, ChangedListener listener) {
+
     }
   }
 
