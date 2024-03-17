@@ -1,16 +1,15 @@
 package cn.knqiufan.rpc.core.consumer;
 
-import cn.knqiufan.rpc.core.api.RpcRequest;
-import cn.knqiufan.rpc.core.api.RpcResponse;
+import cn.knqiufan.rpc.core.api.*;
 import cn.knqiufan.rpc.core.util.MethodUtil;
 import cn.knqiufan.rpc.core.util.TypeUtil;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import okhttp3.*;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -24,9 +23,15 @@ public class KnInvocationHandler implements InvocationHandler {
 
   final static MediaType JSON_TYPE = MediaType.get("application/json; charset=utf-8");
   Class<?> service;
+  RpcContext context;
+  List<String> providers;
 
-  public KnInvocationHandler(Class<?> service) {
+  public KnInvocationHandler(Class<?> service,
+                             RpcContext context,
+                             List<String> providers) {
     this.service = service;
+    this.context = context;
+    this.providers = providers;
   }
 
   @Override
@@ -41,7 +46,7 @@ public class KnInvocationHandler implements InvocationHandler {
     rpcRequest.setMethodSign(MethodUtil.methodSign(method));
     rpcRequest.setArgs(args);
 
-    RpcResponse rpcResponse = post(rpcRequest);
+    RpcResponse rpcResponse = post(rpcRequest, getUrl());
     if (rpcResponse.isStatus()) {
       // 处理各种类型，包括基本类型、数组类型、对象等。
       return TypeUtil.cast(rpcResponse.getData(), method.getReturnType());
@@ -49,6 +54,11 @@ public class KnInvocationHandler implements InvocationHandler {
       Exception ex = rpcResponse.getEx();
       throw new RuntimeException(ex);
     }
+  }
+
+  private String getUrl() {
+    List<String> route = context.getRouter().route(providers);
+    return (String) context.getLoadBalancer().choose(route);
   }
 
   // 三种方法：OkHttpClient URLConnection HttpClient
@@ -62,13 +72,14 @@ public class KnInvocationHandler implements InvocationHandler {
   /**
    * 模拟发送post请求
    *
-   * @param rpcRequest
-   * @return
+   * @param rpcRequest 请求参数
+   * @param url        请求地址
+   * @return 响应
    */
-  private RpcResponse post(RpcRequest rpcRequest) {
+  private RpcResponse post(RpcRequest rpcRequest, String url) {
     String reqString = JSON.toJSONString(rpcRequest);
     Request request = new Request.Builder()
-            .url("http://localhost:8080/")
+            .url(url)
             .post(RequestBody.create(reqString, JSON_TYPE))
             .build();
     try {

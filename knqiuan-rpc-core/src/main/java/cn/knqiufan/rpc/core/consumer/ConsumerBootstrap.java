@@ -1,9 +1,15 @@
 package cn.knqiufan.rpc.core.consumer;
 
 import cn.knqiufan.rpc.core.annotation.KnConsumer;
+import cn.knqiufan.rpc.core.api.LoadBalancer;
+import cn.knqiufan.rpc.core.api.Router;
+import cn.knqiufan.rpc.core.api.RpcContext;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.Environment;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;
@@ -19,9 +25,11 @@ import java.util.Map;
  * @version 1.0.0
  * @date 2024/3/10 19:47
  */
-public class ConsumerBootstrap implements ApplicationContextAware {
+public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAware {
 
   ApplicationContext applicationContext;
+
+  Environment environment;
 
   // 消费端的桩子
   private Map<String, Object> stub = new HashMap<>();
@@ -31,11 +39,26 @@ public class ConsumerBootstrap implements ApplicationContextAware {
     this.applicationContext = applicationContext;
   }
 
+  @Override
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
   /**
    * 创建代理类 - @PostConstruct 中不能使用 getBean
    */
   // @PostConstruct
   public void start() {
+
+    RpcContext context = new RpcContext();
+    context.setLoadBalancer(applicationContext.getBean(LoadBalancer.class));
+    context.setRouter(applicationContext.getBean(Router.class));
+
+    String urls = environment.getProperty("knrpc.providers");
+    if(Strings.isEmpty(urls)) {
+      throw new RuntimeException("knrpc.providers is empty.");
+    }
+    List<String> providers = List.of(urls.split(","));
+
     // 获取所有bean定义的名字
     String[] beanDefinitionNames = applicationContext.getBeanDefinitionNames();
     for (String beanDefinitionName : beanDefinitionNames) {
@@ -51,19 +74,31 @@ public class ConsumerBootstrap implements ApplicationContextAware {
           String serviceName = service.getCanonicalName();
           Object consumer = stub.get(serviceName);
           if (consumer == null) {
-            consumer = createConsumer(service);
+            consumer = createConsumer(service, context, providers);
           }
           field.setAccessible(true);
           field.set(bean, consumer);
         } catch (Exception e) {
-          e.printStackTrace();
+          throw new RuntimeException(e);
         }
       });
     }
   }
 
-  private Object createConsumer(Class<?> service) {
-    return Proxy.newProxyInstance(service.getClassLoader(), new Class[]{service}, new KnInvocationHandler(service));
+  /**
+   * 创建消费者代理
+   *
+   * @param service      消费者接口
+   * @param context       rpc 上下文
+   * @param providers    服务者地址组
+   * @return 代理类
+   */
+  private Object createConsumer(Class<?> service,
+                                RpcContext context,
+                                List<String> providers) {
+    return Proxy.newProxyInstance(service.getClassLoader(),
+            new Class[]{service},
+            new KnInvocationHandler(service, context, providers));
   }
 
   private List<Field> findAnnotationField(Class<?> aClass) {
@@ -80,4 +115,5 @@ public class ConsumerBootstrap implements ApplicationContextAware {
 
     return resultField;
   }
+
 }

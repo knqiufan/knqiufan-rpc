@@ -3,10 +3,14 @@ package cn.knqiufan.rpc.demo.provider;
 import cn.knqiufan.rpc.core.annotation.KnProvider;
 import cn.knqiufan.rpc.demo.api.User;
 import cn.knqiufan.rpc.demo.api.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 测试类
@@ -18,9 +22,13 @@ import java.util.stream.Collectors;
 @Component
 @KnProvider
 public class UserServiceImpl implements UserService {
+
+  @Autowired
+  Environment environment;
+
   @Override
   public User findById(int id) {
-    return new User(id, "knqiufan-" + System.currentTimeMillis());
+    return new User(id, "knqiufan-" + environment.getProperty("server.port") + "_" + System.currentTimeMillis());
   }
 
   @Override

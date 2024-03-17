@@ -1,5 +1,8 @@
+### 获取用户信息 - 负载均衡测试
+GET http://localhost:8088/?id=1
+
 ### 获取用户信息
-POST http://localhost:8080/
+POST http://localhost:8082/
 Content-Type: application/json
 
 {
