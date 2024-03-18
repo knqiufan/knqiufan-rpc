@@ -22,7 +22,10 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * 服务提供者启动类
@@ -36,7 +39,6 @@ public class ProviderBootstrap implements ApplicationContextAware {
   ApplicationContext applicationContext;
 
   private MultiValueMap<String, ProviderMeta> skeleton = new LinkedMultiValueMap<>();
-
 
   String instance;
 
@@ -57,35 +59,21 @@ public class ProviderBootstrap implements ApplicationContextAware {
   }
 
   /**
-   * 延迟暴露，等 SpringBoot 整个上下文运行完之后再进行注册
+   * 设置 skeleton
+   *
+   * @param knProviderBean 被 @KnProvider 注解的服务提供者
    */
-  public void start() {
-    instance = getInstance();
-    // 注册服务
-    skeleton.keySet().forEach(this::registerService);
-  }
-
-  @PreDestroy
-  public void stop() {
-    skeleton.keySet().forEach(this::unregisterService);
-  }
-
-  private void unregisterService(String service) {
-    RegistryCenter registryCenter = applicationContext.getBean(RegistryCenter.class);
-    registryCenter.unregister(service, instance);
-  }
-
-  private void registerService(String service) {
-    RegistryCenter registryCenter = applicationContext.getBean(RegistryCenter.class);
-    registryCenter.register(service, instance);
-  }
-
   private void getInterface(Object knProviderBean) {
     for (Class<?> anInterface : knProviderBean.getClass().getInterfaces()) {
       setSkeleton(knProviderBean, anInterface);
     }
   }
 
+  /**
+   * 获取请求实例字符串
+   *
+   * @return 请求实例字符串
+   */
   private String getInstance() {
     String ip;
     try {
@@ -116,6 +104,12 @@ public class ProviderBootstrap implements ApplicationContextAware {
 
   }
 
+  /**
+   * 具体执行请求方法
+   *
+   * @param request 请求参数
+   * @return 响应参数
+   */
   public RpcResponse invoke(RpcRequest request) {
     System.out.println("========> request: " + JSONObject.toJSONString(request));
     RpcResponse rpcResponse = new RpcResponse();
@@ -140,7 +134,7 @@ public class ProviderBootstrap implements ApplicationContextAware {
   /**
    * 处理参数，对必要参数进行类型转换
    *
-   * @param args           反序列化后的参数
+   * @param args   反序列化后的参数
    * @param method 原参数类型列表
    * @return 原参数
    */
@@ -152,7 +146,7 @@ public class ProviderBootstrap implements ApplicationContextAware {
     Object[] actual = new Object[args.length];
     for (int i = 0; i < args.length; i++) {
       // 若具有参数化的类型，获取实际类型
-      if(genericParameterTypes[i] instanceof ParameterizedType parameterizedType) {
+      if (genericParameterTypes[i] instanceof ParameterizedType parameterizedType) {
         Type actualTypeArgument = parameterizedType.getActualTypeArguments()[0];
         // 参数类型为 ArrayList，做处理
         if (args[i] instanceof ArrayList<?> originList) {
@@ -172,12 +166,55 @@ public class ProviderBootstrap implements ApplicationContextAware {
     return actual;
   }
 
-
-
+  /**
+   * 根据方法签名在列表查找队形服务提供者
+   *
+   * @param providerMetas 服务提供者列表
+   * @param methodSign    方法签名
+   * @return 指定服务提供者
+   */
   private ProviderMeta findProviderMeta(List<ProviderMeta> providerMetas, String methodSign) {
     Optional<ProviderMeta> meta = providerMetas.stream()
             .filter(providerMeta -> providerMeta.getMethodSign().equals(methodSign))
             .findFirst();
     return meta.orElse(null);
+  }
+
+  /**
+   * 延迟暴露，等 SpringBoot 整个上下文运行完之后再进行注册
+   */
+  public void start() {
+    instance = getInstance();
+    // 注册服务
+    skeleton.keySet().forEach(this::registerService);
+  }
+
+  /**
+   * 服务注销，Spring 容器一销毁就执行服务注销
+   */
+  @PreDestroy
+  public void stop() {
+    skeleton.keySet().forEach(this::unregisterService);
+  }
+
+
+  /**
+   * 注册服务
+   *
+   * @param service 服务
+   */
+  private void registerService(String service) {
+    RegistryCenter registryCenter = applicationContext.getBean(RegistryCenter.class);
+    registryCenter.register(service, instance);
+  }
+
+  /**
+   * 注销服务
+   *
+   * @param service 服务
+   */
+  private void unregisterService(String service) {
+    RegistryCenter registryCenter = applicationContext.getBean(RegistryCenter.class);
+    registryCenter.unregister(service, instance);
   }
 }

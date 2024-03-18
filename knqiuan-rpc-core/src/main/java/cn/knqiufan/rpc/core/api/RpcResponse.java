@@ -1,7 +1,7 @@
 package cn.knqiufan.rpc.core.api;
 
 /**
- * 类描述
+ * 响应模型
  *
  * @author knqiufan
  * @version 1.0.0

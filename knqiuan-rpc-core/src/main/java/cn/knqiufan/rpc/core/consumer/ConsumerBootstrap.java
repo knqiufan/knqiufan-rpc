@@ -5,9 +5,6 @@ import cn.knqiufan.rpc.core.api.LoadBalancer;
 import cn.knqiufan.rpc.core.api.RegistryCenter;
 import cn.knqiufan.rpc.core.api.Router;
 import cn.knqiufan.rpc.core.api.RpcContext;
-import cn.knqiufan.rpc.core.registry.ChangedListener;
-import cn.knqiufan.rpc.core.registry.Event;
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -23,7 +20,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * 类描述
+ * 消费者启动类
  *
  * @author knqiufan
  * @version 1.0.0
@@ -47,23 +44,16 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
   public void setEnvironment(Environment environment) {
     this.environment = environment;
   }
-  /**
-   * 创建代理类 - @PostConstruct 中不能使用 getBean
-   */
-  // @PostConstruct
-  public void start() {
 
-    RegistryCenter registryCenter = applicationContext.getBean(RegistryCenter.class);
+  /**
+   * 创建代理类 - 不使用 @PostConstruct，因为 @PostConstruct 中不能使用 getBean
+   */
+  public void start() {
 
     RpcContext context = new RpcContext();
     context.setLoadBalancer(applicationContext.getBean(LoadBalancer.class));
     context.setRouter(applicationContext.getBean(Router.class));
-
-    String urls = environment.getProperty("knrpc.providers");
-    if(Strings.isEmpty(urls)) {
-      throw new RuntimeException("knrpc.providers is empty.");
-    }
-    List<String> providers = List.of(urls.split(","));
+    RegistryCenter registryCenter = applicationContext.getBean(RegistryCenter.class);
 
     // 获取所有bean定义的名字
     String[] beanDefinitionNames = applicationContext.getBeanDefinitionNames();
@@ -91,6 +81,14 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
     }
   }
 
+  /**
+   * 创建消费者代理
+   *
+   * @param service        服务器接口
+   * @param context        rpc 上下文
+   * @param registryCenter 注册中心
+   * @return 消费者代理
+   */
   private Object createFromRegistry(Class<?> service, RpcContext context, RegistryCenter registryCenter) {
     List<String> providers = mapProviders(registryCenter.fetchAll(service.getCanonicalName()));
     System.out.println("====> map to provider: ");
@@ -104,18 +102,12 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
     return createConsumer(service, context, providers);
   }
 
-  private List<String> mapProviders(List<String> nodes) {
-    return nodes.stream()
-            .map(x -> "http://" + x.replace('_', ':'))
-            .collect(Collectors.toList());
-  }
-
   /**
    * 创建消费者代理
    *
-   * @param service      消费者接口
-   * @param context       rpc 上下文
-   * @param providers    服务者地址组
+   * @param service   消费者接口
+   * @param context   rpc 上下文
+   * @param providers 服务者地址组
    * @return 代理类
    */
   private Object createConsumer(Class<?> service,
@@ -126,6 +118,24 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
             new KnInvocationHandler(service, context, providers));
   }
 
+  /**
+   * 请求地址格式转换
+   *
+   * @param nodes 节点列表
+   * @return 转换后的节点列表
+   */
+  private List<String> mapProviders(List<String> nodes) {
+    return nodes.stream()
+            .map(x -> "http://" + x.replace('_', ':'))
+            .collect(Collectors.toList());
+  }
+
+  /**
+   * 获取被 @KnConsumer 注解的字段
+   *
+   * @param aClass aClass
+   * @return 被 @KnConsumer 注解的字段
+   */
   private List<Field> findAnnotationField(Class<?> aClass) {
     List<Field> resultField = new ArrayList<>();
     while (aClass != null) {

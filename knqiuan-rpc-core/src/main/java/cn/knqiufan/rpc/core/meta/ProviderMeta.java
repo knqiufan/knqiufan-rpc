@@ -3,7 +3,7 @@ package cn.knqiufan.rpc.core.meta;
 import java.lang.reflect.Method;
 
 /**
- * 类描述
+ * 服务提供者信息
  *
  * @author knqiufan
  * @version 1.0.0
