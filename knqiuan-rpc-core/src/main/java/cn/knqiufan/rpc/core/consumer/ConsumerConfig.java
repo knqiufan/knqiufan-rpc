@@ -49,7 +49,8 @@ public class ConsumerConfig {
     return Router.DEFAULT;
   }
 
-  @Bean(initMethod = "start", destroyMethod = "stop")
+  // @Bean(initMethod = "start", destroyMethod = "stop")
+  @Bean(initMethod = "start")
   public RegistryCenter registryCenter() {
     return new ZkRegistryCenter();
   }
