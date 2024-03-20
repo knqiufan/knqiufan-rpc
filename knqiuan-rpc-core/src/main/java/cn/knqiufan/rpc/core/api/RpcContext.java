@@ -1,5 +1,8 @@
 package cn.knqiufan.rpc.core.api;
 
+import cn.knqiufan.rpc.core.consumer.http.HttpInvoker;
+import cn.knqiufan.rpc.core.consumer.http.OkHttpInvoker;
+
 /**
  * rpc 上下文
  *
@@ -10,6 +13,16 @@ package cn.knqiufan.rpc.core.api;
 public class RpcContext {
   LoadBalancer loadBalancer;
   Router router;
+
+  HttpInvoker httpInvoker;
+
+  public HttpInvoker getHttpInvoker() {
+    return httpInvoker;
+  }
+
+  public void setHttpInvoker(HttpInvoker httpInvoker) {
+    this.httpInvoker = httpInvoker;
+  }
 
   public LoadBalancer getLoadBalancer() {
     return loadBalancer;

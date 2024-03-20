@@ -5,6 +5,8 @@ import cn.knqiufan.rpc.core.api.LoadBalancer;
 import cn.knqiufan.rpc.core.api.RegistryCenter;
 import cn.knqiufan.rpc.core.api.Router;
 import cn.knqiufan.rpc.core.api.RpcContext;
+import cn.knqiufan.rpc.core.consumer.http.HttpInvoker;
+import cn.knqiufan.rpc.core.consumer.http.OkHttpInvoker;
 import cn.knqiufan.rpc.core.util.MethodUtil;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -53,6 +55,7 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
     RpcContext context = new RpcContext();
     context.setLoadBalancer(applicationContext.getBean(LoadBalancer.class));
     context.setRouter(applicationContext.getBean(Router.class));
+    context.setHttpInvoker(applicationContext.getBean(HttpInvoker.class));
     RegistryCenter registryCenter = applicationContext.getBean(RegistryCenter.class);
 
     // 获取所有bean定义的名字

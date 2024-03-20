@@ -20,8 +20,6 @@ import java.util.List;
  */
 public class KnInvocationHandler implements InvocationHandler {
 
-  OkHttpInvoker httpInvoker = new OkHttpInvoker();
-
   Class<?> service;
   RpcContext context;
   List<String> providers;
@@ -46,7 +44,7 @@ public class KnInvocationHandler implements InvocationHandler {
     rpcRequest.setMethodSign(MethodUtil.methodSign(method));
     rpcRequest.setArgs(args);
 
-    RpcResponse<?> rpcResponse = httpInvoker.post(rpcRequest, getUrl());
+    RpcResponse<?> rpcResponse = context.getHttpInvoker().post(rpcRequest, getUrl());
     if (rpcResponse.isStatus()) {
       // 处理各种类型，包括基本类型、数组类型、对象等。
       return TypeUtil.cast(rpcResponse.getData(), method.getReturnType());

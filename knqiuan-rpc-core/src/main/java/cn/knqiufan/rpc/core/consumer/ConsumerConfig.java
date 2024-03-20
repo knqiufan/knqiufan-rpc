@@ -4,6 +4,8 @@ import cn.knqiufan.rpc.core.api.LoadBalancer;
 import cn.knqiufan.rpc.core.api.RegistryCenter;
 import cn.knqiufan.rpc.core.api.Router;
 import cn.knqiufan.rpc.core.cluster.RoundRobinLoadBalancer;
+import cn.knqiufan.rpc.core.consumer.http.HttpInvoker;
+import cn.knqiufan.rpc.core.consumer.http.OkHttpInvoker;
 import cn.knqiufan.rpc.core.registry.ZkRegistryCenter;
 import org.junit.jupiter.api.Order;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,5 +54,10 @@ public class ConsumerConfig {
   @Bean(initMethod = "start")
   public RegistryCenter registryCenter() {
     return new ZkRegistryCenter();
+  }
+
+  @Bean
+  public HttpInvoker httpInvoker() {
+    return new OkHttpInvoker();
   }
 }

@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 类描述
+ * OkHttp 执行
  *
  * @author knqiufan
  * @version 1.0.0
