@@ -1,7 +1,7 @@
 package cn.knqiufan.rpc.core.registry;
 
 /**
- * 类描述
+ * 改变时间监听接口
  *
  * @author knqiufan
  * @version 1.0.0

@@ -8,11 +8,14 @@ import cn.knqiufan.rpc.core.registry.Event;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
+import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * zookeeper 注册中心
@@ -107,23 +110,22 @@ public class ZkRegistryCenter implements RegistryCenter {
     return nodes.stream().map(x -> {
       String[] url = x.split("_");
       return InstanceMeta.http(url[0], Integer.valueOf(url[1]));
-    }).toList();
+    }).collect(Collectors.toList());
   }
 
   @Override
-  public void subscribe(ServiceMeta service, ChangedListener listener) {
+  public void subscribe(ServiceMeta service, ChangedListener changedListener) {
     // 创建树缓存
     final CuratorCache cache = CuratorCache.build(client, "/" + service.toPath());
     // 创建监听，当前路径下的节点变动会触发
-    cache.listenable().addListener((type, oldChildData, newChildData) -> {
-      System.out.println("========> zookeeper subscribe type: " + type + ", and child data: " + newChildData);
-      List<InstanceMeta> nodes = fetchAll(service);
-      listener.fire(new Event(nodes));
-    });
-    try {
-      cache.start();
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
+    CuratorCacheListener listener = CuratorCacheListener.builder()
+            .forAll((type, oldChildData, newChildData) -> {
+              System.out.println("========> zookeeper subscribe type: " + type + ", and child data: " + newChildData);
+              List<InstanceMeta> nodes = fetchAll(service);
+              changedListener.fire(new Event(nodes));
+            })
+            .build();
+    cache.listenable().addListener(listener);
+    cache.start();
   }
 }
