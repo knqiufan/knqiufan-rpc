@@ -1,13 +1,16 @@
-package cn.knqiufan.rpc.core.registry;
+package cn.knqiufan.rpc.core.registry.zookeeper;
 
 import cn.knqiufan.rpc.core.api.RegistryCenter;
 import cn.knqiufan.rpc.core.meta.InstanceMeta;
 import cn.knqiufan.rpc.core.meta.ServiceMeta;
+import cn.knqiufan.rpc.core.registry.ChangedListener;
+import cn.knqiufan.rpc.core.registry.Event;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.cache.TreeCache;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
 
@@ -20,18 +23,24 @@ import java.util.List;
  */
 public class ZkRegistryCenter implements RegistryCenter {
 
+  @Value("${knrpc.zkServer}")
+  String servers;
+  @Value("${knrpc.zkRoot}")
+  String root;
+
+
   private CuratorFramework client = null;
 
   @Override
   public void start() {
     // 创建 zookeeper 的 client
     client = CuratorFrameworkFactory.builder()
-            .connectString("111.231.54.184:2181")
-            .namespace("knqiufan-rpc")
+            .connectString(servers)
+            .namespace(root)
             // 重试机制 超时时间 1s 重试3次
             .retryPolicy(new ExponentialBackoffRetry(1000, 3))
             .build();
-    System.out.println("=======> ZkRegistryCenter started.");
+    System.out.println("=======> ZkRegistryCenter starting to server[" + servers + "/" + root + "]");
     client.start();
   }
 

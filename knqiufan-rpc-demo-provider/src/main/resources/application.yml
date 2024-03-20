@@ -1,5 +1,8 @@
 server:
   port: 8083
+knrpc:
+  zkServer: 111.231.54.184:2181
+  zkRoot: knqiufan-rpc
 app:
   id: app1
   namespace: knqiufan

@@ -65,11 +65,11 @@ public class ProviderBootstrap implements ApplicationContextAware {
   /**
    * 设置 skeleton
    *
-   * @param knProviderBean 被 @KnProvider 注解的服务提供者
+   * @param impl 被 @KnProvider 注解的服务提供者
    */
-  private void getInterface(Object knProviderBean) {
-    for (Class<?> anInterface : knProviderBean.getClass().getInterfaces()) {
-      setSkeleton(knProviderBean, anInterface);
+  private void getInterface(Object impl) {
+    for (Class<?> anInterface : impl.getClass().getInterfaces()) {
+      createProvider(impl, anInterface);
     }
   }
 
@@ -91,17 +91,17 @@ public class ProviderBootstrap implements ApplicationContextAware {
   /**
    * 设置桩子
    *
-   * @param knProviderBean 被 KnProvider 注解的 Bean
+   * @param impl 被 KnProvider 注解的 Bean
    * @param anInterface    接口类
    */
-  private void setSkeleton(Object knProviderBean, Class<?> anInterface) {
+  private void createProvider(Object impl, Class<?> anInterface) {
     for (Method method : anInterface.getMethods()) {
       if (MethodUtil.checkObjectBaseMethod(method)) {
         continue;
       }
       ProviderMeta providerMeta = new ProviderMeta();
       providerMeta.setMethod(method);
-      providerMeta.setServiceImpl(knProviderBean);
+      providerMeta.setServiceImpl(impl);
       providerMeta.setMethodSign(MethodUtil.methodSign(method));
       skeleton.add(anInterface.getCanonicalName(), providerMeta);
     }

@@ -1,8 +1,7 @@
 package cn.knqiufan.rpc.core.provider;
 
 import cn.knqiufan.rpc.core.api.RegistryCenter;
-import cn.knqiufan.rpc.core.consumer.ConsumerBootstrap;
-import cn.knqiufan.rpc.core.registry.ZkRegistryCenter;
+import cn.knqiufan.rpc.core.registry.zookeeper.ZkRegistryCenter;
 import org.junit.jupiter.api.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;

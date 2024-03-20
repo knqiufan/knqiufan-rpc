@@ -6,7 +6,7 @@ import cn.knqiufan.rpc.core.api.Router;
 import cn.knqiufan.rpc.core.cluster.RoundRobinLoadBalancer;
 import cn.knqiufan.rpc.core.consumer.http.HttpInvoker;
 import cn.knqiufan.rpc.core.consumer.http.OkHttpInvoker;
-import cn.knqiufan.rpc.core.registry.ZkRegistryCenter;
+import cn.knqiufan.rpc.core.registry.zookeeper.ZkRegistryCenter;
 import org.junit.jupiter.api.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
