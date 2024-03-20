@@ -33,8 +33,8 @@ public class KnrpcDemoConsumerApplication {
   @KnConsumer
   UserService userService;
 
-  @KnConsumer
-  OrderService orderService;
+  // @KnConsumer
+  // OrderService orderService;
 
   @RequestMapping("/")
   public User findById(int id) {

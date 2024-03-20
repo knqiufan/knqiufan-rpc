@@ -21,8 +21,4 @@ public class Event {
   public List<InstanceMeta> getData() {
     return data;
   }
-
-  public void setData(List<InstanceMeta> data) {
-    this.data = data;
-  }
 }

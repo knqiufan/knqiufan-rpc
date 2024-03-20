@@ -74,25 +74,10 @@ public class ProviderBootstrap implements ApplicationContextAware {
   }
 
   /**
-   * 获取请求实例字符串
-   *
-   * @return 请求实例字符串
-   */
-  private InstanceMeta getInstance() {
-    String ip;
-    try {
-      ip = InetAddress.getLocalHost().getHostAddress();
-    } catch (UnknownHostException e) {
-      throw new RuntimeException(e);
-    }
-    return InstanceMeta.http(ip, Integer.valueOf(port));
-  }
-
-  /**
    * 设置桩子
    *
-   * @param impl 被 KnProvider 注解的 Bean
-   * @param anInterface    接口类
+   * @param impl        被 KnProvider 注解的 Bean
+   * @param anInterface 接口类
    */
   private void createProvider(Object impl, Class<?> anInterface) {
     for (Method method : anInterface.getMethods()) {
@@ -112,8 +97,12 @@ public class ProviderBootstrap implements ApplicationContextAware {
    * 延迟暴露，等 SpringBoot 整个上下文运行完之后再进行注册
    */
   public void start() {
+    try {
+      instance = InstanceMeta.http(InetAddress.getLocalHost().getHostAddress(), Integer.valueOf(port));
+    } catch (UnknownHostException e) {
+      throw new RuntimeException(e);
+    }
     registryCenter.start();
-    instance = getInstance();
     // 注册服务
     skeleton.keySet().forEach(this::registerService);
   }
@@ -139,7 +128,6 @@ public class ProviderBootstrap implements ApplicationContextAware {
     serviceMeta.setApp(app);
     serviceMeta.setNamespace(namespace);
     serviceMeta.setEnv(env);
-    RegistryCenter registryCenter = applicationContext.getBean(RegistryCenter.class);
     registryCenter.register(serviceMeta, instance);
   }
 
@@ -154,7 +142,6 @@ public class ProviderBootstrap implements ApplicationContextAware {
     serviceMeta.setApp(app);
     serviceMeta.setNamespace(namespace);
     serviceMeta.setEnv(env);
-    RegistryCenter registryCenter = applicationContext.getBean(RegistryCenter.class);
     registryCenter.unregister(serviceMeta, instance);
   }
 }
