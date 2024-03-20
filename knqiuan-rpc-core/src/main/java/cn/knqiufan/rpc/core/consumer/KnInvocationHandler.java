@@ -4,6 +4,7 @@ import cn.knqiufan.rpc.core.api.RpcContext;
 import cn.knqiufan.rpc.core.api.RpcRequest;
 import cn.knqiufan.rpc.core.api.RpcResponse;
 import cn.knqiufan.rpc.core.consumer.http.OkHttpInvoker;
+import cn.knqiufan.rpc.core.meta.InstanceMeta;
 import cn.knqiufan.rpc.core.util.MethodUtil;
 import cn.knqiufan.rpc.core.util.TypeUtil;
 
@@ -22,18 +23,18 @@ public class KnInvocationHandler implements InvocationHandler {
 
   Class<?> service;
   RpcContext context;
-  List<String> providers;
+  List<InstanceMeta> providers;
 
   public KnInvocationHandler(Class<?> service,
                              RpcContext context,
-                             List<String> providers) {
+                             List<InstanceMeta> providers) {
     this.service = service;
     this.context = context;
     this.providers = providers;
   }
 
   @Override
-  public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+  public Object invoke(Object proxy, Method method, Object[] args) {
 
     if (MethodUtil.checkObjectBaseMethod(method)) {
       return null;
@@ -44,7 +45,7 @@ public class KnInvocationHandler implements InvocationHandler {
     rpcRequest.setMethodSign(MethodUtil.methodSign(method));
     rpcRequest.setArgs(args);
 
-    RpcResponse<?> rpcResponse = context.getHttpInvoker().post(rpcRequest, getUrl());
+    RpcResponse<?> rpcResponse = context.getHttpInvoker().post(rpcRequest, getInstanceMeta().toUrl());
     if (rpcResponse.isStatus()) {
       // 处理各种类型，包括基本类型、数组类型、对象等。
       return TypeUtil.cast(rpcResponse.getData(), method.getReturnType());
@@ -54,8 +55,8 @@ public class KnInvocationHandler implements InvocationHandler {
     }
   }
 
-  private String getUrl() {
-    List<String> route = context.getRouter().route(providers);
-    return (String) context.getLoadBalancer().choose(route);
+  private InstanceMeta getInstanceMeta() {
+    List<InstanceMeta> instanceMetas = context.getRouter().route(providers);
+    return context.getLoadBalancer().choose(instanceMetas);
   }
 }

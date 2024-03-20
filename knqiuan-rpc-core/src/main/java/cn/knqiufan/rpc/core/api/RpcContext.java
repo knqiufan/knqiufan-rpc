@@ -2,6 +2,7 @@ package cn.knqiufan.rpc.core.api;
 
 import cn.knqiufan.rpc.core.consumer.http.HttpInvoker;
 import cn.knqiufan.rpc.core.consumer.http.OkHttpInvoker;
+import cn.knqiufan.rpc.core.meta.InstanceMeta;
 
 /**
  * rpc 上下文
@@ -11,8 +12,8 @@ import cn.knqiufan.rpc.core.consumer.http.OkHttpInvoker;
  * @date 2024/3/17 17:36
  */
 public class RpcContext {
-  LoadBalancer loadBalancer;
-  Router router;
+  LoadBalancer<InstanceMeta> loadBalancer;
+  Router<InstanceMeta> router;
 
   HttpInvoker httpInvoker;
 
@@ -24,19 +25,19 @@ public class RpcContext {
     this.httpInvoker = httpInvoker;
   }
 
-  public LoadBalancer getLoadBalancer() {
+  public LoadBalancer<InstanceMeta> getLoadBalancer() {
     return loadBalancer;
   }
 
-  public void setLoadBalancer(LoadBalancer loadBalancer) {
+  public void setLoadBalancer(LoadBalancer<InstanceMeta> loadBalancer) {
     this.loadBalancer = loadBalancer;
   }
 
-  public Router getRouter() {
+  public Router<InstanceMeta> getRouter() {
     return router;
   }
 
-  public void setRouter(Router router) {
+  public void setRouter(Router<InstanceMeta> router) {
     this.router = router;
   }
 }

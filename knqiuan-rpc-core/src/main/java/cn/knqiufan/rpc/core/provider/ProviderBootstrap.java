@@ -4,6 +4,7 @@ import cn.knqiufan.rpc.core.annotation.KnProvider;
 import cn.knqiufan.rpc.core.api.RegistryCenter;
 import cn.knqiufan.rpc.core.api.RpcRequest;
 import cn.knqiufan.rpc.core.api.RpcResponse;
+import cn.knqiufan.rpc.core.meta.InstanceMeta;
 import cn.knqiufan.rpc.core.meta.ProviderMeta;
 import cn.knqiufan.rpc.core.util.MethodUtil;
 import cn.knqiufan.rpc.core.util.TypeUtil;
@@ -43,7 +44,7 @@ public class ProviderBootstrap implements ApplicationContextAware {
   public MultiValueMap<String, ProviderMeta> getSkeleton() {
     return skeleton;
   }
-  String instance;
+  InstanceMeta instance;
 
   @Value("${server.port}")
   String port;
@@ -78,14 +79,14 @@ public class ProviderBootstrap implements ApplicationContextAware {
    *
    * @return 请求实例字符串
    */
-  private String getInstance() {
+  private InstanceMeta getInstance() {
     String ip;
     try {
       ip = InetAddress.getLocalHost().getHostAddress();
     } catch (UnknownHostException e) {
       throw new RuntimeException(e);
     }
-    return ip + "_" + port;
+    return InstanceMeta.http(ip, Integer.valueOf(port));
   }
 
   /**

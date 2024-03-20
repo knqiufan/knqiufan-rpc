@@ -1,5 +1,7 @@
 package cn.knqiufan.rpc.core.registry;
 
+import cn.knqiufan.rpc.core.meta.InstanceMeta;
+
 import java.util.List;
 
 /**
@@ -10,17 +12,17 @@ import java.util.List;
  * @date 2024/3/17 21:54
  */
 public class Event {
-  List<String> data;
+  List<InstanceMeta> data;
 
-  public Event(List<String> data) {
+  public Event(List<InstanceMeta> data) {
     this.data = data;
   }
 
-  public List<String> getData() {
+  public List<InstanceMeta> getData() {
     return data;
   }
 
-  public void setData(List<String> data) {
+  public void setData(List<InstanceMeta> data) {
     this.data = data;
   }
 }

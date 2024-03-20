@@ -7,6 +7,7 @@ import cn.knqiufan.rpc.core.api.Router;
 import cn.knqiufan.rpc.core.api.RpcContext;
 import cn.knqiufan.rpc.core.consumer.http.HttpInvoker;
 import cn.knqiufan.rpc.core.consumer.http.OkHttpInvoker;
+import cn.knqiufan.rpc.core.meta.InstanceMeta;
 import cn.knqiufan.rpc.core.util.MethodUtil;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -94,14 +95,14 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
    * @return 消费者代理
    */
   private Object createFromRegistry(Class<?> service, RpcContext context, RegistryCenter registryCenter) {
-    List<String> providers = mapProviders(registryCenter.fetchAll(service.getCanonicalName()));
+    List<InstanceMeta> providers = registryCenter.fetchAll(service.getCanonicalName());
     System.out.println("====> map to provider: ");
     providers.forEach(System.out::println);
 
     // 订阅服务
     registryCenter.subscribe(service.getCanonicalName(), event -> {
       providers.clear();
-      providers.addAll(mapProviders(event.getData()));
+      providers.addAll(event.getData());
     });
     return createConsumer(service, context, providers);
   }
@@ -116,21 +117,9 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
    */
   private Object createConsumer(Class<?> service,
                                 RpcContext context,
-                                List<String> providers) {
+                                List<InstanceMeta> providers) {
     return Proxy.newProxyInstance(service.getClassLoader(),
             new Class[]{service},
             new KnInvocationHandler(service, context, providers));
-  }
-
-  /**
-   * 请求地址格式转换
-   *
-   * @param nodes 节点列表
-   * @return 转换后的节点列表
-   */
-  private List<String> mapProviders(List<String> nodes) {
-    return nodes.stream()
-            .map(x -> "http://" + x.replace('_', ':'))
-            .collect(Collectors.toList());
   }
 }
