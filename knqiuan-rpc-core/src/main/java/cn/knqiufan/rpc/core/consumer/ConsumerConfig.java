@@ -12,8 +12,6 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Arrays;
-
 /**
  * 类描述
  *
@@ -26,6 +24,7 @@ public class ConsumerConfig {
 
   @Value("${knrpc.providers}")
   String providers;
+
   @Bean
   ConsumerBootstrap createConsumerBootstrap() {
     return new ConsumerBootstrap();
