@@ -32,7 +32,7 @@ public class ProviderConfig {
     };
   }
 
-  @Bean(initMethod = "start")
+  @Bean
   public RegistryCenter registryCenter() {
     return new ZkRegistryCenter();
   }

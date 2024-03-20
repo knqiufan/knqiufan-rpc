@@ -35,6 +35,7 @@ public class ZkRegistryCenter implements RegistryCenter {
 
   @Override
   public void stop() {
+    System.out.println(" ======> zk registry stop.");
     client.close();
   }
 

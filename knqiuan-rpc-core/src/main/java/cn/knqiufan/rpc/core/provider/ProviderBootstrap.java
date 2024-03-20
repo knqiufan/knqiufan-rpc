@@ -37,6 +37,7 @@ import java.util.Optional;
 public class ProviderBootstrap implements ApplicationContextAware {
 
   ApplicationContext applicationContext;
+  RegistryCenter registryCenter;
 
   private MultiValueMap<String, ProviderMeta> skeleton = new LinkedMultiValueMap<>();
 
@@ -54,6 +55,7 @@ public class ProviderBootstrap implements ApplicationContextAware {
   @PostConstruct
   public void init() {
     Map<String, Object> provider = applicationContext.getBeansWithAnnotation(KnProvider.class);
+    registryCenter = applicationContext.getBean(RegistryCenter.class);
     provider.forEach((x, y) -> System.out.println(x));
     provider.values().forEach(this::getInterface);
   }
@@ -184,6 +186,7 @@ public class ProviderBootstrap implements ApplicationContextAware {
    * 延迟暴露，等 SpringBoot 整个上下文运行完之后再进行注册
    */
   public void start() {
+    registryCenter.start();
     instance = getInstance();
     // 注册服务
     skeleton.keySet().forEach(this::registerService);
@@ -195,6 +198,7 @@ public class ProviderBootstrap implements ApplicationContextAware {
   @PreDestroy
   public void stop() {
     skeleton.keySet().forEach(this::unregisterService);
+    registryCenter.stop();
   }
 
 
