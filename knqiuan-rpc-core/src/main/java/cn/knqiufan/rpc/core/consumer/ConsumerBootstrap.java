@@ -5,6 +5,7 @@ import cn.knqiufan.rpc.core.api.LoadBalancer;
 import cn.knqiufan.rpc.core.api.RegistryCenter;
 import cn.knqiufan.rpc.core.api.Router;
 import cn.knqiufan.rpc.core.api.RpcContext;
+import cn.knqiufan.rpc.core.util.MethodUtil;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -13,7 +14,6 @@ import org.springframework.core.env.Environment;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +61,7 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
       // 根据名字获取到bean
       Object bean = applicationContext.getBean(beanDefinitionName);
       // 获取所有带有 KnConsumer 的 field
-      List<Field> annotationFields = findAnnotationField(bean.getClass());
+      List<Field> annotationFields = MethodUtil.findAnnotationField(bean.getClass(), KnConsumer.class);
       // 遍历并生成代理
       annotationFields.forEach(field -> {
         try {
@@ -129,26 +129,4 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
             .map(x -> "http://" + x.replace('_', ':'))
             .collect(Collectors.toList());
   }
-
-  /**
-   * 获取被 @KnConsumer 注解的字段
-   *
-   * @param aClass aClass
-   * @return 被 @KnConsumer 注解的字段
-   */
-  private List<Field> findAnnotationField(Class<?> aClass) {
-    List<Field> resultField = new ArrayList<>();
-    while (aClass != null) {
-      Field[] fields = aClass.getDeclaredFields();
-      for (Field field : fields) {
-        if (field.isAnnotationPresent(KnConsumer.class)) {
-          resultField.add(field);
-        }
-      }
-      aClass = aClass.getSuperclass();
-    }
-
-    return resultField;
-  }
-
 }

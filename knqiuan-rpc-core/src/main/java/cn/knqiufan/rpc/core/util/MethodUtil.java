@@ -1,7 +1,13 @@
 package cn.knqiufan.rpc.core.util;
 
+import cn.knqiufan.rpc.core.annotation.KnConsumer;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * 方法工具
@@ -52,5 +58,26 @@ public class MethodUtil {
     sb.append("@").append(method.getParameterCount());
     Arrays.stream(method.getParameterTypes()).forEach(m -> sb.append("_").append(m.getCanonicalName()));
     return sb.toString();
+  }
+
+  /**
+   * 获取被 @KnConsumer 注解的字段
+   *
+   * @param aClass aClass
+   * @return 被 @KnConsumer 注解的字段
+   */
+  public static List<Field> findAnnotationField(Class<?> aClass, Class<? extends Annotation> annotationClass) {
+    List<Field> resultField = new ArrayList<>();
+    while (aClass != null) {
+      Field[] fields = aClass.getDeclaredFields();
+      for (Field field : fields) {
+        if (field.isAnnotationPresent(annotationClass)) {
+          resultField.add(field);
+        }
+      }
+      aClass = aClass.getSuperclass();
+    }
+
+    return resultField;
   }
 }

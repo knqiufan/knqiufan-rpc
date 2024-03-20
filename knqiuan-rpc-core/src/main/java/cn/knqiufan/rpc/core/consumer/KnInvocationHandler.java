@@ -46,7 +46,7 @@ public class KnInvocationHandler implements InvocationHandler {
     rpcRequest.setMethodSign(MethodUtil.methodSign(method));
     rpcRequest.setArgs(args);
 
-    RpcResponse rpcResponse = post(rpcRequest, getUrl());
+    RpcResponse<Object> rpcResponse = post(rpcRequest, getUrl());
     if (rpcResponse.isStatus()) {
       // 处理各种类型，包括基本类型、数组类型、对象等。
       return TypeUtil.cast(rpcResponse.getData(), method.getReturnType());
@@ -76,7 +76,7 @@ public class KnInvocationHandler implements InvocationHandler {
    * @param url        请求地址
    * @return 响应
    */
-  private RpcResponse post(RpcRequest rpcRequest, String url) {
+  private RpcResponse<Object> post(RpcRequest rpcRequest, String url) {
     String reqString = JSON.toJSONString(rpcRequest);
     Request request = new Request.Builder()
             .url(url)
@@ -84,8 +84,7 @@ public class KnInvocationHandler implements InvocationHandler {
             .build();
     try {
       String respJson = client.newCall(request).execute().body().string();
-      RpcResponse rpcResponse = JSON.parseObject(respJson, RpcResponse.class);
-      return rpcResponse;
+      return JSON.parseObject(respJson, RpcResponse.class);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
