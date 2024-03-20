@@ -4,6 +4,7 @@ import cn.knqiufan.rpc.core.api.RpcRequest;
 import cn.knqiufan.rpc.core.api.RpcResponse;
 import cn.knqiufan.rpc.core.provider.ProviderBootstrap;
 import cn.knqiufan.rpc.core.provider.ProviderConfig;
+import cn.knqiufan.rpc.core.provider.ProviderInvoker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class KnrpcDemoProviderApplication {
 
   @Autowired
-  ProviderBootstrap providerBootstrap;
+  ProviderInvoker providerInvoker;
 
   public static void main(String[] args) {
     SpringApplication.run(KnrpcDemoProviderApplication.class, args);
@@ -34,7 +35,7 @@ public class KnrpcDemoProviderApplication {
 
   @RequestMapping("/")
   public RpcResponse invoke(@RequestBody RpcRequest request) {
-    return providerBootstrap.invoke(request);
+    return providerInvoker.invoke(request);
   }
 
 }
