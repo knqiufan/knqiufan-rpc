@@ -3,7 +3,7 @@ package cn.knqiufan.rpc.core.meta;
 import java.util.Map;
 
 /**
- * 类描述
+ * 描述服务实例的元数据
  *
  * @author knqiufan
  * @version 1.0.0

@@ -2,6 +2,7 @@ package cn.knqiufan.rpc.core.registry;
 
 import cn.knqiufan.rpc.core.api.RegistryCenter;
 import cn.knqiufan.rpc.core.meta.InstanceMeta;
+import cn.knqiufan.rpc.core.meta.ServiceMeta;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.cache.TreeCache;
@@ -9,7 +10,6 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * zookeeper 注册中心
@@ -42,9 +42,9 @@ public class ZkRegistryCenter implements RegistryCenter {
   }
 
   @Override
-  public void register(String service, InstanceMeta instance) {
+  public void register(ServiceMeta service, InstanceMeta instance) {
     // 服务路径：根目录下的service
-    String servicePath = "/" + service;
+    String servicePath = "/" + service.toPath();
     // 创建服务（持久化服务节点）
     try {
       // 节点不存在则创建
@@ -62,9 +62,9 @@ public class ZkRegistryCenter implements RegistryCenter {
   }
 
   @Override
-  public void unregister(String service, InstanceMeta instance) {
+  public void unregister(ServiceMeta service, InstanceMeta instance) {
     // 服务路径：根目录下的service
-    String servicePath = "/" + service;
+    String servicePath = "/" + service.toPath();
     // 注销服务
     try {
       // 节点不存在直接返回
@@ -81,9 +81,9 @@ public class ZkRegistryCenter implements RegistryCenter {
   }
 
   @Override
-  public List<InstanceMeta> fetchAll(String service) {
+  public List<InstanceMeta> fetchAll(ServiceMeta service) {
     // 服务路径：根目录下的service
-    String servicePath = "/" + service;
+    String servicePath = "/" + service.toPath();
     try {
       // 获取所有子节点列表
       List<String> nodes = client.getChildren().forPath(servicePath);
@@ -101,9 +101,9 @@ public class ZkRegistryCenter implements RegistryCenter {
   }
 
   @Override
-  public void subscribe(String service, ChangedListener listener) {
+  public void subscribe(ServiceMeta service, ChangedListener listener) {
     // 创建树缓存
-    final TreeCache cache = TreeCache.newBuilder(client, "/" + service)
+    final TreeCache cache = TreeCache.newBuilder(client, "/" + service.toPath())
             .setCacheData(true)
             .setMaxDepth(2)
             .build();

@@ -2,13 +2,10 @@ package cn.knqiufan.rpc.core.provider;
 
 import cn.knqiufan.rpc.core.annotation.KnProvider;
 import cn.knqiufan.rpc.core.api.RegistryCenter;
-import cn.knqiufan.rpc.core.api.RpcRequest;
-import cn.knqiufan.rpc.core.api.RpcResponse;
 import cn.knqiufan.rpc.core.meta.InstanceMeta;
 import cn.knqiufan.rpc.core.meta.ProviderMeta;
+import cn.knqiufan.rpc.core.meta.ServiceMeta;
 import cn.knqiufan.rpc.core.util.MethodUtil;
-import cn.knqiufan.rpc.core.util.TypeUtil;
-import com.alibaba.fastjson.JSONObject;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,16 +14,10 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * 服务提供者启动类
@@ -41,13 +32,21 @@ public class ProviderBootstrap implements ApplicationContextAware {
   RegistryCenter registryCenter;
 
   private MultiValueMap<String, ProviderMeta> skeleton = new LinkedMultiValueMap<>();
+
   public MultiValueMap<String, ProviderMeta> getSkeleton() {
     return skeleton;
   }
+
   InstanceMeta instance;
 
   @Value("${server.port}")
   String port;
+  @Value("${app.id}")
+  String app;
+  @Value("${app.namespace}")
+  String namespace;
+  @Value("${app.env}")
+  String env;
 
   @Override
   public void setApplicationContext(ApplicationContext applicationContext) {
@@ -135,8 +134,13 @@ public class ProviderBootstrap implements ApplicationContextAware {
    * @param service 服务
    */
   private void registerService(String service) {
+    ServiceMeta serviceMeta = new ServiceMeta();
+    serviceMeta.setName(service);
+    serviceMeta.setApp(app);
+    serviceMeta.setNamespace(namespace);
+    serviceMeta.setEnv(env);
     RegistryCenter registryCenter = applicationContext.getBean(RegistryCenter.class);
-    registryCenter.register(service, instance);
+    registryCenter.register(serviceMeta, instance);
   }
 
   /**
@@ -145,7 +149,12 @@ public class ProviderBootstrap implements ApplicationContextAware {
    * @param service 服务
    */
   private void unregisterService(String service) {
+    ServiceMeta serviceMeta = new ServiceMeta();
+    serviceMeta.setName(service);
+    serviceMeta.setApp(app);
+    serviceMeta.setNamespace(namespace);
+    serviceMeta.setEnv(env);
     RegistryCenter registryCenter = applicationContext.getBean(RegistryCenter.class);
-    registryCenter.unregister(service, instance);
+    registryCenter.unregister(serviceMeta, instance);
   }
 }

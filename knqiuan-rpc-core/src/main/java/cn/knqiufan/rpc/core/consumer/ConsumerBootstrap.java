@@ -6,10 +6,11 @@ import cn.knqiufan.rpc.core.api.RegistryCenter;
 import cn.knqiufan.rpc.core.api.Router;
 import cn.knqiufan.rpc.core.api.RpcContext;
 import cn.knqiufan.rpc.core.consumer.http.HttpInvoker;
-import cn.knqiufan.rpc.core.consumer.http.OkHttpInvoker;
 import cn.knqiufan.rpc.core.meta.InstanceMeta;
+import cn.knqiufan.rpc.core.meta.ServiceMeta;
 import cn.knqiufan.rpc.core.util.MethodUtil;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.EnvironmentAware;
@@ -20,7 +21,6 @@ import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * 消费者启动类
@@ -30,7 +30,12 @@ import java.util.stream.Collectors;
  * @date 2024/3/10 19:47
  */
 public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAware {
-
+  @Value("${app.id}")
+  String app;
+  @Value("${app.namespace}")
+  String namespace;
+  @Value("${app.env}")
+  String env;
   ApplicationContext applicationContext;
 
   Environment environment;
@@ -95,12 +100,17 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
    * @return 消费者代理
    */
   private Object createFromRegistry(Class<?> service, RpcContext context, RegistryCenter registryCenter) {
-    List<InstanceMeta> providers = registryCenter.fetchAll(service.getCanonicalName());
+    ServiceMeta serviceMeta = new ServiceMeta();
+    serviceMeta.setName(service.getCanonicalName());
+    serviceMeta.setApp(app);
+    serviceMeta.setNamespace(namespace);
+    serviceMeta.setEnv(env);
+    List<InstanceMeta> providers = registryCenter.fetchAll(serviceMeta);
     System.out.println("====> map to provider: ");
     providers.forEach(System.out::println);
 
     // 订阅服务
-    registryCenter.subscribe(service.getCanonicalName(), event -> {
+    registryCenter.subscribe(serviceMeta, event -> {
       providers.clear();
       providers.addAll(event.getData());
     });

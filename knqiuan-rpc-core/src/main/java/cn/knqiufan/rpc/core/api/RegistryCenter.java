@@ -1,6 +1,7 @@
 package cn.knqiufan.rpc.core.api;
 
 import cn.knqiufan.rpc.core.meta.InstanceMeta;
+import cn.knqiufan.rpc.core.meta.ServiceMeta;
 import cn.knqiufan.rpc.core.registry.ChangedListener;
 
 import java.util.List;
@@ -18,17 +19,17 @@ public interface RegistryCenter {
   void stop();
 
   /*** provider 端 ***/
-  void register(String service, InstanceMeta instance);
-  void unregister(String service, InstanceMeta instance);
+  void register(ServiceMeta service, InstanceMeta instance);
+  void unregister(ServiceMeta service, InstanceMeta instance);
 
   /*** consumer 端 ***/
   // 拿到当前所有服务的接口
-  List<InstanceMeta> fetchAll(String service);
+  List<InstanceMeta> fetchAll(ServiceMeta service);
 
   /**
    * 订阅
    */
-  void subscribe(String service, ChangedListener listener);
+  void subscribe(ServiceMeta service, ChangedListener listener);
   // void heartbeat();
 
   /**
@@ -53,22 +54,22 @@ public interface RegistryCenter {
     }
 
     @Override
-    public void register(String service, InstanceMeta instance) {
+    public void register(ServiceMeta service, InstanceMeta instance) {
 
     }
 
     @Override
-    public void unregister(String service, InstanceMeta instance) {
+    public void unregister(ServiceMeta service, InstanceMeta instance) {
 
     }
 
     @Override
-    public List<InstanceMeta> fetchAll(String service) {
+    public List<InstanceMeta> fetchAll(ServiceMeta service) {
       return providers;
     }
 
     @Override
-    public void subscribe(String service, ChangedListener listener) {
+    public void subscribe(ServiceMeta service, ChangedListener listener) {
 
     }
   }

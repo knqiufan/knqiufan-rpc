@@ -1,2 +1,6 @@
 server:
   port: 8083
+app:
+  id: app1
+  namespace: knqiufan
+  env: dev
