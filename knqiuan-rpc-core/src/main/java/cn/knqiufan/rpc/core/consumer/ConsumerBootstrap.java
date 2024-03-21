@@ -18,10 +18,7 @@ import org.springframework.core.env.Environment;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 消费者启动类
@@ -112,7 +109,7 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
 
     // 订阅服务
     registryCenter.subscribe(serviceMeta, event -> {
-      providers.clear();
+      providers.removeAll(Collections.unmodifiableList(providers));
       providers.addAll(event.getData());
     });
     return createConsumer(service, context, providers);
