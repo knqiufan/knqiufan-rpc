@@ -1,4 +1,6 @@
-package cn.knqiufan.rpc.demo.api;
+package cn.knqiufan.rpc.demo.api.service;
+
+import cn.knqiufan.rpc.demo.api.pojo.User;
 
 import java.util.List;
 import java.util.Map;

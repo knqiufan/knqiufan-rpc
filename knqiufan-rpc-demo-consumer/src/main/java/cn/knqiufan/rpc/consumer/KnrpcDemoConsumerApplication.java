@@ -2,10 +2,8 @@ package cn.knqiufan.rpc.consumer;
 
 import cn.knqiufan.rpc.core.annotation.KnConsumer;
 import cn.knqiufan.rpc.core.consumer.ConsumerConfig;
-import cn.knqiufan.rpc.demo.api.Order;
-import cn.knqiufan.rpc.demo.api.OrderService;
-import cn.knqiufan.rpc.demo.api.User;
-import cn.knqiufan.rpc.demo.api.UserService;
+import cn.knqiufan.rpc.demo.api.pojo.User;
+import cn.knqiufan.rpc.demo.api.service.UserService;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,10 +11,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 
 /**
  * 类描述

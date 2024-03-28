@@ -1,8 +1,8 @@
 package cn.knqiufan.rpc.demo.provider;
 
 import cn.knqiufan.rpc.core.annotation.KnProvider;
-import cn.knqiufan.rpc.demo.api.User;
-import cn.knqiufan.rpc.demo.api.UserService;
+import cn.knqiufan.rpc.demo.api.pojo.User;
+import cn.knqiufan.rpc.demo.api.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;

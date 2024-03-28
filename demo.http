@@ -6,7 +6,7 @@ POST http://localhost:8082/
 Content-Type: application/json
 
 {
-  "service": "cn.knqiufan.rpc.demo.api.UserService",
+  "service": "cn.knqiufan.rpc.demo.api.service.UserService",
   "methodSign": "findById@1_int",
   "args": [100]
 }
@@ -16,7 +16,7 @@ POST http://localhost:8080/
 Content-Type: application/json
 
 {
-  "service": "cn.knqiufan.rpc.demo.api.UserService",
+  "service": "cn.knqiufan.rpc.demo.api.service.UserService",
   "methodSign": "findById@2_int_java.lang.String",
   "args": [100, "knqiufan"]
 }
@@ -27,7 +27,7 @@ POST http://localhost:8080/
 Content-Type: application/json
 
 {
-"service": "cn.knqiufan.rpc.demo.api.OrderService",
+"service": "cn.knqiufan.rpc.demo.api.service.OrderService",
 "methodSign": "findById@1_int",
 "args": [100]
 }
