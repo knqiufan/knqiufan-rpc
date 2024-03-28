@@ -1,4 +1,4 @@
-package cn.knqiufan.rpc.demo.api;
+package cn.knqiufan.rpc.demo.api.pojo;
 
 /**
  * 类描述

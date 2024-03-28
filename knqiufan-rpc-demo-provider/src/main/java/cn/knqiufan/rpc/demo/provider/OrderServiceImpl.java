@@ -1,8 +1,8 @@
 package cn.knqiufan.rpc.demo.provider;
 
 import cn.knqiufan.rpc.core.annotation.KnProvider;
-import cn.knqiufan.rpc.demo.api.Order;
-import cn.knqiufan.rpc.demo.api.OrderService;
+import cn.knqiufan.rpc.demo.api.pojo.Order;
+import cn.knqiufan.rpc.demo.api.service.OrderService;
 import org.springframework.stereotype.Component;
 
 /**
