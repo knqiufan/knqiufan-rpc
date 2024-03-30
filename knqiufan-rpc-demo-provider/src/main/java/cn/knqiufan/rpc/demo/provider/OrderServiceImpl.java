@@ -6,7 +6,7 @@ import cn.knqiufan.rpc.demo.api.service.OrderService;
 import org.springframework.stereotype.Component;
 
 /**
- * 类描述
+ * 订单实现类
  *
  * @author knqiufan
  * @version 1.0.0
