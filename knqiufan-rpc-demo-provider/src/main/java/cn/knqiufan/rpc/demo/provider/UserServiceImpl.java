@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 测试类
+ * 用户测试类
  *
  * @author knqiufan
  * @version 1.0.0
