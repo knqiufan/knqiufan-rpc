@@ -1,5 +1,6 @@
 package cn.knqiufan.rpc.core.consumer;
 
+import cn.knqiufan.rpc.core.api.Filter;
 import cn.knqiufan.rpc.core.api.RpcContext;
 import cn.knqiufan.rpc.core.api.RpcRequest;
 import cn.knqiufan.rpc.core.api.RpcResponse;
@@ -48,7 +49,26 @@ public class KnInvocationHandler implements InvocationHandler {
     rpcRequest.setMethodSign(MethodUtil.methodSign(method));
     rpcRequest.setArgs(args);
 
+    // 前置处理
+    for (Filter filter : context.getFilters()) {
+      RpcResponse preResponse = filter.preFilter(rpcRequest);
+      if (preResponse != null) {
+        log.debug(filter.getClass().getName() + " ====> preFilter: " + preResponse);
+        return castReturnResult(method, preResponse);
+      }
+    }
+
     RpcResponse<?> rpcResponse = context.getHttpInvoker().post(rpcRequest, getInstanceMeta().toUrl());
+
+    // TODO：后置处理，拿到的可能不是最终值，需要再设计一下
+    for (Filter filter : context.getFilters()) {
+      rpcResponse = filter.postFilter(rpcRequest, rpcResponse);
+    }
+
+    return castReturnResult(method, rpcResponse);
+  }
+
+  private static Object castReturnResult(Method method, RpcResponse<?> rpcResponse) {
     if (rpcResponse.isStatus()) {
       // 处理各种类型，包括基本类型、数组类型、对象等。
       return TypeUtil.cast(rpcResponse.getData(), method.getReturnType());
@@ -58,6 +78,11 @@ public class KnInvocationHandler implements InvocationHandler {
     }
   }
 
+  /**
+   * 获取服务实例
+   *
+   * @return 服务实例
+   */
   private InstanceMeta getInstanceMeta() {
     List<InstanceMeta> instanceMetas = context.getRouter().route(providers);
     InstanceMeta instance = context.getLoadBalancer().choose(instanceMetas);

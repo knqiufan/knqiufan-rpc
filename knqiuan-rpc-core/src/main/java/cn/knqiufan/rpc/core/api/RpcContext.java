@@ -4,6 +4,8 @@ import cn.knqiufan.rpc.core.consumer.http.HttpInvoker;
 import cn.knqiufan.rpc.core.consumer.http.OkHttpInvoker;
 import cn.knqiufan.rpc.core.meta.InstanceMeta;
 
+import java.util.List;
+
 /**
  * rpc 上下文
  *
@@ -14,6 +16,8 @@ import cn.knqiufan.rpc.core.meta.InstanceMeta;
 public class RpcContext {
   LoadBalancer<InstanceMeta> loadBalancer;
   Router<InstanceMeta> router;
+
+  List<Filter> filters;
 
   HttpInvoker httpInvoker;
 
@@ -39,5 +43,13 @@ public class RpcContext {
 
   public void setRouter(Router<InstanceMeta> router) {
     this.router = router;
+  }
+
+  public List<Filter> getFilters() {
+    return filters;
+  }
+
+  public void setFilters(List<Filter> filters) {
+    this.filters = filters;
   }
 }

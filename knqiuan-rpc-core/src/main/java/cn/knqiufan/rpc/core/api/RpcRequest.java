@@ -1,5 +1,7 @@
 package cn.knqiufan.rpc.core.api;
 
+import java.util.Arrays;
+
 /**
  * 请求模型
  *
@@ -43,5 +45,14 @@ public class RpcRequest {
 
   public void setService(String service) {
     this.service = service;
+  }
+
+  @Override
+  public String toString() {
+    return "RpcRequest{" +
+            "service='" + service + '\'' +
+            ", methodSign='" + methodSign + '\'' +
+            ", args=" + Arrays.toString(args) +
+            '}';
   }
 }

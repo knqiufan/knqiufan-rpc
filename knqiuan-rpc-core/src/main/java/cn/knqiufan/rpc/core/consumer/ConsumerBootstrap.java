@@ -1,10 +1,7 @@
 package cn.knqiufan.rpc.core.consumer;
 
 import cn.knqiufan.rpc.core.annotation.KnConsumer;
-import cn.knqiufan.rpc.core.api.LoadBalancer;
-import cn.knqiufan.rpc.core.api.RegistryCenter;
-import cn.knqiufan.rpc.core.api.Router;
-import cn.knqiufan.rpc.core.api.RpcContext;
+import cn.knqiufan.rpc.core.api.*;
 import cn.knqiufan.rpc.core.consumer.http.HttpInvoker;
 import cn.knqiufan.rpc.core.meta.InstanceMeta;
 import cn.knqiufan.rpc.core.meta.ServiceMeta;
@@ -66,6 +63,7 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
     RpcContext context = new RpcContext();
     context.setLoadBalancer(applicationContext.getBean(LoadBalancer.class));
     context.setRouter(applicationContext.getBean(Router.class));
+    context.setFilters(applicationContext.getBeansOfType(Filter.class).values().stream().toList());
     context.setHttpInvoker(applicationContext.getBean(HttpInvoker.class));
     RegistryCenter registryCenter = applicationContext.getBean(RegistryCenter.class);
 

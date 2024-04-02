@@ -51,4 +51,13 @@ public class RpcResponse<T> {
   public void setEx(Exception ex) {
     this.ex = ex;
   }
+
+  @Override
+  public String toString() {
+    return "RpcResponse{" +
+            "status=" + status +
+            ", data=" + data +
+            ", ex=" + ex +
+            '}';
+  }
 }
