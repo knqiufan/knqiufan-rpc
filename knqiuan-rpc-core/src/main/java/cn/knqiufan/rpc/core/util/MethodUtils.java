@@ -1,7 +1,5 @@
 package cn.knqiufan.rpc.core.util;
 
-import cn.knqiufan.rpc.core.annotation.KnConsumer;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -16,7 +14,7 @@ import java.util.List;
  * @version 1.0.0
  * @date 2024/3/16 18:24
  */
-public class MethodUtil {
+public class MethodUtils {
 
   private static final String[] objectBaseMethods = new String[]{
           "toString",

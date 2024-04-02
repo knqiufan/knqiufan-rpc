@@ -6,7 +6,6 @@ import com.alibaba.fastjson.JSONObject;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * 类型转换工具类
@@ -15,7 +14,7 @@ import java.util.List;
  * @version 1.0.0
  * @date 2024/3/16 19:41
  */
-public class TypeUtil {
+public class TypeUtils {
 
   /**
    * 类型转换

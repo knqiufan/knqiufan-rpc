@@ -5,8 +5,8 @@ import cn.knqiufan.rpc.core.api.RpcContext;
 import cn.knqiufan.rpc.core.api.RpcRequest;
 import cn.knqiufan.rpc.core.api.RpcResponse;
 import cn.knqiufan.rpc.core.meta.InstanceMeta;
-import cn.knqiufan.rpc.core.util.MethodUtil;
-import cn.knqiufan.rpc.core.util.TypeUtil;
+import cn.knqiufan.rpc.core.util.MethodUtils;
+import cn.knqiufan.rpc.core.util.TypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,13 +40,13 @@ public class KnInvocationHandler implements InvocationHandler {
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) {
 
-    if (MethodUtil.checkObjectBaseMethod(method)) {
+    if (MethodUtils.checkObjectBaseMethod(method)) {
       return null;
     }
 
     RpcRequest rpcRequest = new RpcRequest();
     rpcRequest.setService(service.getCanonicalName());
-    rpcRequest.setMethodSign(MethodUtil.methodSign(method));
+    rpcRequest.setMethodSign(MethodUtils.methodSign(method));
     rpcRequest.setArgs(args);
 
     // 前置处理
@@ -71,7 +71,7 @@ public class KnInvocationHandler implements InvocationHandler {
   private static Object castReturnResult(Method method, RpcResponse<?> rpcResponse) {
     if (rpcResponse.isStatus()) {
       // 处理各种类型，包括基本类型、数组类型、对象等。
-      return TypeUtil.cast(rpcResponse.getData(), method.getReturnType());
+      return TypeUtils.cast(rpcResponse.getData(), method.getReturnType());
     } else {
       Exception ex = rpcResponse.getEx();
       throw new RuntimeException(ex);

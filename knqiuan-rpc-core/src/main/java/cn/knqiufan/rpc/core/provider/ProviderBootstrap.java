@@ -5,7 +5,7 @@ import cn.knqiufan.rpc.core.api.RegistryCenter;
 import cn.knqiufan.rpc.core.meta.InstanceMeta;
 import cn.knqiufan.rpc.core.meta.ProviderMeta;
 import cn.knqiufan.rpc.core.meta.ServiceMeta;
-import cn.knqiufan.rpc.core.util.MethodUtil;
+import cn.knqiufan.rpc.core.util.MethodUtils;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.slf4j.Logger;
@@ -83,13 +83,13 @@ public class ProviderBootstrap implements ApplicationContextAware {
    */
   private void createProvider(Object impl, Class<?> anInterface) {
     for (Method method : anInterface.getMethods()) {
-      if (MethodUtil.checkObjectBaseMethod(method)) {
+      if (MethodUtils.checkObjectBaseMethod(method)) {
         continue;
       }
       ProviderMeta providerMeta = new ProviderMeta();
       providerMeta.setMethod(method);
       providerMeta.setServiceImpl(impl);
-      providerMeta.setMethodSign(MethodUtil.methodSign(method));
+      providerMeta.setMethodSign(MethodUtils.methodSign(method));
       skeleton.add(anInterface.getCanonicalName(), providerMeta);
     }
 

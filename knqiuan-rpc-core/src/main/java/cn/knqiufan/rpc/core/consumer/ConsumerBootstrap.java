@@ -5,7 +5,7 @@ import cn.knqiufan.rpc.core.api.*;
 import cn.knqiufan.rpc.core.consumer.http.HttpInvoker;
 import cn.knqiufan.rpc.core.meta.InstanceMeta;
 import cn.knqiufan.rpc.core.meta.ServiceMeta;
-import cn.knqiufan.rpc.core.util.MethodUtil;
+import cn.knqiufan.rpc.core.util.MethodUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -73,7 +73,7 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
       // 根据名字获取到bean
       Object bean = applicationContext.getBean(beanDefinitionName);
       // 获取所有带有 KnConsumer 的 field
-      List<Field> annotationFields = MethodUtil.findAnnotationField(bean.getClass(), KnConsumer.class);
+      List<Field> annotationFields = MethodUtils.findAnnotationField(bean.getClass(), KnConsumer.class);
       // 遍历并生成代理
       annotationFields.forEach(field -> {
         try {

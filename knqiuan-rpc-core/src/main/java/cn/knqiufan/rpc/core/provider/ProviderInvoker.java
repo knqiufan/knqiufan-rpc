@@ -3,7 +3,7 @@ package cn.knqiufan.rpc.core.provider;
 import cn.knqiufan.rpc.core.api.RpcRequest;
 import cn.knqiufan.rpc.core.api.RpcResponse;
 import cn.knqiufan.rpc.core.meta.ProviderMeta;
-import cn.knqiufan.rpc.core.util.TypeUtil;
+import cn.knqiufan.rpc.core.util.TypeUtils;
 import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,15 +81,15 @@ public class ProviderInvoker {
         if (args[i] instanceof ArrayList<?> originList) {
           List<Object> resultList = new ArrayList<>();
           for (Object o : originList) {
-            resultList.add(TypeUtil.cast(o, (Class<?>) actualTypeArgument));
+            resultList.add(TypeUtils.cast(o, (Class<?>) actualTypeArgument));
           }
           actual[i] = resultList;
           continue;
         }
-        actual[i] = TypeUtil.cast(args[i], parameterTypes[i]);
+        actual[i] = TypeUtils.cast(args[i], parameterTypes[i]);
         continue;
       }
-      actual[i] = TypeUtil.cast(args[i], parameterTypes[i]);
+      actual[i] = TypeUtils.cast(args[i], parameterTypes[i]);
 
     }
     return actual;
