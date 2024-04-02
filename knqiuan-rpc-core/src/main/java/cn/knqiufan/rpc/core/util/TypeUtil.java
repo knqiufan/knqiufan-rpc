@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * 类描述
+ * 类型转换工具类
  *
  * @author knqiufan
  * @version 1.0.0

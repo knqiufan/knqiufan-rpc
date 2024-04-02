@@ -5,7 +5,8 @@ import cn.knqiufan.rpc.core.api.RpcResponse;
 import cn.knqiufan.rpc.core.meta.ProviderMeta;
 import cn.knqiufan.rpc.core.util.TypeUtil;
 import com.alibaba.fastjson.JSONObject;
-import org.springframework.util.LinkedMultiValueMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.MultiValueMap;
 
 import java.lang.reflect.InvocationTargetException;
@@ -24,11 +25,12 @@ import java.util.Optional;
  * @date 2024/3/20 20:16
  */
 public class ProviderInvoker {
+  private static final Logger log = LoggerFactory.getLogger(ProviderInvoker.class);
 
   private MultiValueMap<String, ProviderMeta> skeleton;
 
   public ProviderInvoker(ProviderBootstrap providerBootstrap) {
-    skeleton  = providerBootstrap.getSkeleton();
+    skeleton = providerBootstrap.getSkeleton();
   }
 
   /**
@@ -38,7 +40,7 @@ public class ProviderInvoker {
    * @return 响应参数
    */
   public RpcResponse<Object> invoke(RpcRequest request) {
-    System.out.println("========> request: " + JSONObject.toJSONString(request));
+    log.info("========> request: " + JSONObject.toJSONString(request));
     RpcResponse<Object> rpcResponse = new RpcResponse<>();
     List<ProviderMeta> providerMetas = skeleton.get(request.getService());
     try {
@@ -54,7 +56,7 @@ public class ProviderInvoker {
     } catch (IllegalAccessException e) {
       rpcResponse.setEx(new RuntimeException(e.getMessage()));
     }
-    System.out.println("========> response: " + JSONObject.toJSONString(rpcResponse));
+    log.info("========> response: " + JSONObject.toJSONString(rpcResponse));
     return rpcResponse;
   }
 

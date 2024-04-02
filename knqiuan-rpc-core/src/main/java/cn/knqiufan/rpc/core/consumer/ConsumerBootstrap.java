@@ -9,6 +9,8 @@ import cn.knqiufan.rpc.core.consumer.http.HttpInvoker;
 import cn.knqiufan.rpc.core.meta.InstanceMeta;
 import cn.knqiufan.rpc.core.meta.ServiceMeta;
 import cn.knqiufan.rpc.core.util.MethodUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -18,7 +20,10 @@ import org.springframework.core.env.Environment;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 消费者启动类
@@ -28,6 +33,8 @@ import java.util.*;
  * @date 2024/3/10 19:47
  */
 public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAware {
+
+  private static final Logger log = LoggerFactory.getLogger(ConsumerBootstrap.class);
   @Value("${app.id}")
   String app;
   @Value("${app.namespace}")
@@ -104,7 +111,7 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
     serviceMeta.setNamespace(namespace);
     serviceMeta.setEnv(env);
     List<InstanceMeta> providers = registryCenter.fetchAll(serviceMeta);
-    System.out.println("====> map to provider: ");
+    log.info("====> map to provider: ");
     providers.forEach(System.out::println);
 
     // 订阅服务

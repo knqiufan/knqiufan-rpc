@@ -8,3 +8,9 @@ app:
   id: app1
   namespace: knqiufan
   env: dev
+
+
+logging:
+  level:
+    root: error
+    cn.knqiufan.rpc: info

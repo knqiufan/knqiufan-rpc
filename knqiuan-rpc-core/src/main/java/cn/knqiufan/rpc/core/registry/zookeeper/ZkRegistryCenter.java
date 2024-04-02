@@ -11,9 +11,10 @@ import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
  */
 public class ZkRegistryCenter implements RegistryCenter {
 
+  private static final Logger log = LoggerFactory.getLogger(ZkRegistryCenter.class);
   @Value("${knrpc.zkServer}")
   String servers;
   @Value("${knrpc.zkRoot}")
@@ -43,13 +45,13 @@ public class ZkRegistryCenter implements RegistryCenter {
             // 重试机制 超时时间 1s 重试3次
             .retryPolicy(new ExponentialBackoffRetry(1000, 3))
             .build();
-    System.out.println("=======> ZkRegistryCenter starting to server[" + servers + "/" + root + "]");
+    log.info("=======> ZkRegistryCenter starting to server[" + servers + "/" + root + "]");
     client.start();
   }
 
   @Override
   public void stop() {
-    System.out.println(" ======> zk registry stop.");
+    log.info(" ======> zk registry stop.");
     client.close();
   }
 
@@ -65,7 +67,7 @@ public class ZkRegistryCenter implements RegistryCenter {
       }
       // 创建服务实例临时节点
       String instancePath = servicePath + "/" + instance.toPath();
-      System.out.println("=======> register to zookeeper: " + instancePath);
+      log.info("=======> register to zookeeper: " + instancePath);
       client.create().withMode(CreateMode.EPHEMERAL).forPath(instancePath, "provider".getBytes());
     } catch (Exception e) {
       throw new RuntimeException(e);
@@ -85,7 +87,7 @@ public class ZkRegistryCenter implements RegistryCenter {
       }
       // 注销删除服务实例临时节点
       String instancePath = servicePath + "/" + instance.toPath();
-      System.out.println("=======> unregister to zookeeper: " + instancePath);
+      log.info("=======> unregister to zookeeper: " + instancePath);
       client.delete().quietly().forPath(instancePath);
     } catch (Exception e) {
       throw new RuntimeException(e);
@@ -99,7 +101,7 @@ public class ZkRegistryCenter implements RegistryCenter {
     try {
       // 获取所有子节点列表
       List<String> nodes = client.getChildren().forPath(servicePath);
-      System.out.println("========> nodes: " + nodes);
+      log.info("========> nodes: " + nodes);
       return mapInstance(nodes);
     } catch (Exception e) {
       throw new RuntimeException(e);
@@ -120,7 +122,7 @@ public class ZkRegistryCenter implements RegistryCenter {
     // 创建监听，当前路径下的节点变动会触发
     CuratorCacheListener listener = CuratorCacheListener.builder()
             .forAll((type, oldChildData, newChildData) -> {
-              System.out.println("========> zookeeper subscribe type: " + type + ", and child data: " + newChildData);
+              log.info("========> zookeeper subscribe type: " + type + ", and child data: " + newChildData);
               List<InstanceMeta> nodes = fetchAll(service);
               changedListener.fire(new Event(nodes));
             })

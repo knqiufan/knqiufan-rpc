@@ -8,6 +8,8 @@ import cn.knqiufan.rpc.core.meta.ServiceMeta;
 import cn.knqiufan.rpc.core.util.MethodUtil;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -27,7 +29,7 @@ import java.util.Map;
  * @date 2024/3/9 1:23
  */
 public class ProviderBootstrap implements ApplicationContextAware {
-
+  private static final Logger log = LoggerFactory.getLogger(ProviderBootstrap.class);
   ApplicationContext applicationContext;
   RegistryCenter registryCenter;
 
@@ -58,7 +60,7 @@ public class ProviderBootstrap implements ApplicationContextAware {
   public void init() {
     Map<String, Object> provider = applicationContext.getBeansWithAnnotation(KnProvider.class);
     registryCenter = applicationContext.getBean(RegistryCenter.class);
-    provider.forEach((x, y) -> System.out.println(x));
+    provider.forEach((x, y) -> log.info(x));
     provider.values().forEach(this::getInterface);
   }
 
