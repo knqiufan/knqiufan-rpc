@@ -10,5 +10,8 @@
   </parent>
 
   <artifactId>knqiufan-rpc-demo-api</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <name>knqiufan-rpc-demo-api</name>
+  <description>knqiufan-rpc-demo-api</description>
 
 </project>
