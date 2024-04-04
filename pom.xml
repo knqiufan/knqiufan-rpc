@@ -12,7 +12,7 @@
     <module>knqiuan-rpc-core</module>
     <module>knqiufan-rpc-demo-api</module>
     <module>knqiufan-rpc-demo-provider</module>
-<!--    <module>knqiufan-rpc-demo-consumer</module>-->
+    <module>knqiufan-rpc-demo-consumer</module>
   </modules>
 
   <properties>
