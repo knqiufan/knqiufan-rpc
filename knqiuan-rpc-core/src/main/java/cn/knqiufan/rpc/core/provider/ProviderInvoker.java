@@ -1,6 +1,6 @@
 package cn.knqiufan.rpc.core.provider;
 
-import cn.knqiufan.rpc.core.api.KnrpcException;
+import cn.knqiufan.rpc.core.api.RpcException;
 import cn.knqiufan.rpc.core.api.RpcRequest;
 import cn.knqiufan.rpc.core.api.RpcResponse;
 import cn.knqiufan.rpc.core.meta.ProviderMeta;
@@ -53,9 +53,9 @@ public class ProviderInvoker {
       rpcResponse.setData(result);
     } catch (InvocationTargetException e) {
       // 反射目标异常
-      rpcResponse.setEx(new KnrpcException(e.getTargetException().getMessage(), KnrpcException.INVOKE_EX));
+      rpcResponse.setEx(new RpcException(e.getTargetException().getMessage(), RpcException.INVOKE_EX));
     } catch (IllegalAccessException e) {
-      rpcResponse.setEx(new KnrpcException(e.getMessage(), KnrpcException.UNKNOWN_EX));
+      rpcResponse.setEx(new RpcException(e.getMessage(), RpcException.UNKNOWN_EX));
     }
     log.info("========> response: " + JSONObject.toJSONString(rpcResponse));
     return rpcResponse;

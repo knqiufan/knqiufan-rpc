@@ -70,10 +70,10 @@ public class KnInvocationHandler implements InvocationHandler {
       // 处理各种类型，包括基本类型、数组类型、对象等。
       return TypeUtils.cast(rpcResponse.getData(), method.getReturnType());
     } else {
-      if (rpcResponse.getEx() instanceof KnrpcException ex) {
+      if (rpcResponse.getEx() instanceof RpcException ex) {
         throw ex;
       }
-      throw new KnrpcException(rpcResponse.getEx(), KnrpcException.UNKNOWN_EX);
+      throw new RpcException(rpcResponse.getEx(), RpcException.UNKNOWN_EX);
     }
   }
 

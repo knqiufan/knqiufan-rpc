@@ -7,7 +7,7 @@ package cn.knqiufan.rpc.core.api;
  * @version 1.0.0
  * @date 2024/4/5 16:04
  */
-public class KnrpcException extends  RuntimeException{
+public class RpcException extends  RuntimeException{
 
   private String errorCode;
 
@@ -20,33 +20,33 @@ public class KnrpcException extends  RuntimeException{
   public static final String UNKNOWN_EX = "Z001-UNKNOWN";
 
 
-  public KnrpcException() {
+  public RpcException() {
   }
 
-  public KnrpcException(String errorCode) {
+  public RpcException(String errorCode) {
     this.errorCode = errorCode;
   }
 
-  public KnrpcException(String message, String errorCode) {
+  public RpcException(String message, String errorCode) {
     super(message);
     this.errorCode = errorCode;
   }
 
-  public KnrpcException(String message, Throwable cause, String errorCode) {
+  public RpcException(String message, Throwable cause, String errorCode) {
     super(message, cause);
     this.errorCode = errorCode;
   }
 
-  public KnrpcException(Throwable cause, String errorCode) {
+  public RpcException(Throwable cause, String errorCode) {
     super(cause);
     this.errorCode = errorCode;
   }
 
-  public KnrpcException(Throwable cause) {
+  public RpcException(Throwable cause) {
     super(cause);
   }
 
-  public KnrpcException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace, String errorCode) {
+  public RpcException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace, String errorCode) {
     super(message, cause, enableSuppression, writableStackTrace);
     this.errorCode = errorCode;
   }
