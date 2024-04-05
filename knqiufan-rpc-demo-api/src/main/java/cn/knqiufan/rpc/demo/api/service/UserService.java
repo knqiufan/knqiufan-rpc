@@ -50,4 +50,6 @@ public interface UserService {
   int[] getIdsByIds(int[] i);
 
   User ex(boolean flag);
+
+  User find(int timeout);
 }

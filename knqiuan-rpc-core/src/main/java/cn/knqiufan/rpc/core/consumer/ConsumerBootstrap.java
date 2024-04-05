@@ -38,6 +38,10 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
   String namespace;
   @Value("${app.env}")
   String env;
+  @Value(("${app.reties}"))
+  int reties;
+  @Value(("${app.timeout}"))
+  int timeout;
   ApplicationContext applicationContext;
 
   Environment environment;
@@ -65,6 +69,8 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
     context.setRouter(applicationContext.getBean(Router.class));
     context.setFilters(applicationContext.getBeansOfType(Filter.class).values().stream().toList());
     context.setHttpInvoker(applicationContext.getBean(HttpInvoker.class));
+    context.getParameters().put("app.reties", String.valueOf(reties));
+    context.getParameters().put("app.timeout", String.valueOf(timeout));
     RegistryCenter registryCenter = applicationContext.getBean(RegistryCenter.class);
 
     // 获取所有bean定义的名字

@@ -4,7 +4,9 @@ import cn.knqiufan.rpc.core.consumer.http.HttpInvoker;
 import cn.knqiufan.rpc.core.consumer.http.OkHttpInvoker;
 import cn.knqiufan.rpc.core.meta.InstanceMeta;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * rpc 上下文
@@ -20,6 +22,7 @@ public class RpcContext {
   List<Filter> filters;
 
   HttpInvoker httpInvoker;
+  Map<String, String> parameters = new HashMap<>();
 
   public HttpInvoker getHttpInvoker() {
     return httpInvoker;
@@ -51,5 +54,13 @@ public class RpcContext {
 
   public void setFilters(List<Filter> filters) {
     this.filters = filters;
+  }
+
+  public Map<String, String> getParameters() {
+    return parameters;
+  }
+
+  public void setParameters(Map<String, String> parameters) {
+    this.parameters = parameters;
   }
 }

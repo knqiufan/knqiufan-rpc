@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.net.SocketTimeoutException;
 import java.util.List;
 
 /**
@@ -46,23 +47,35 @@ public class KnInvocationHandler implements InvocationHandler {
     rpcRequest.setMethodSign(MethodUtils.methodSign(method));
     rpcRequest.setArgs(args);
 
-    // 前置处理
-    for (Filter filter : context.getFilters()) {
-      RpcResponse preResponse = filter.preFilter(rpcRequest);
-      if (preResponse != null) {
-        log.debug(filter.getClass().getName() + " ====> preFilter: " + preResponse);
-        return castReturnResult(method, preResponse);
+    // 超时自旋重试机制
+    int reties = Integer.parseInt(context.getParameters().getOrDefault("app.reties", "1"));
+    while (reties-- > 0) {
+      log.debug(" ===> reties: {}", reties);
+      try {
+        // 前置处理
+        for (Filter filter : context.getFilters()) {
+          RpcResponse preResponse = filter.preFilter(rpcRequest);
+          if (preResponse != null) {
+            log.debug(filter.getClass().getName() + " ====> preFilter: " + preResponse);
+            return castReturnResult(method, preResponse);
+          }
+        }
+
+        RpcResponse<?> rpcResponse = context.getHttpInvoker().post(rpcRequest, getInstanceMeta().toUrl());
+
+        // TODO：后置处理，拿到的可能不是最终值，需要再设计一下
+        for (Filter filter : context.getFilters()) {
+          rpcResponse = filter.postFilter(rpcRequest, rpcResponse);
+        }
+
+        return castReturnResult(method, rpcResponse);
+      } catch (Exception ex) {
+        if(!(ex.getCause() instanceof SocketTimeoutException)) {
+          throw ex;
+        }
       }
     }
-
-    RpcResponse<?> rpcResponse = context.getHttpInvoker().post(rpcRequest, getInstanceMeta().toUrl());
-
-    // TODO：后置处理，拿到的可能不是最终值，需要再设计一下
-    for (Filter filter : context.getFilters()) {
-      rpcResponse = filter.postFilter(rpcRequest, rpcResponse);
-    }
-
-    return castReturnResult(method, rpcResponse);
+    return null;
   }
 
   private static Object castReturnResult(Method method, RpcResponse<?> rpcResponse) {

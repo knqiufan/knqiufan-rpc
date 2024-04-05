@@ -25,9 +25,8 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class ConsumerConfig {
-
-  @Value("${knrpc.providers}")
-  String providers;
+  @Value(("${app.timeout}"))
+  int timeout;
 
   @Bean
   ConsumerBootstrap createConsumerBootstrap() {
@@ -60,7 +59,7 @@ public class ConsumerConfig {
 
   @Bean
   public HttpInvoker httpInvoker() {
-    return new OkHttpInvoker();
+    return new OkHttpInvoker(timeout);
   }
 
   @Bean
