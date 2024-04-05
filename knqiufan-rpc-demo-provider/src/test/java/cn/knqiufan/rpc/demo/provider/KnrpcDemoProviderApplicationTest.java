@@ -15,7 +15,7 @@ import java.io.IOException;
  * @version 1.0.0
  * @date 2024/4/4 10:59
  */
-@SpringBootTest
+@SpringBootTest(classes = KnrpcDemoProviderApplicationTest.class)
 public class KnrpcDemoProviderApplicationTest {
 
   static TestZkServer testZkServer = new TestZkServer();

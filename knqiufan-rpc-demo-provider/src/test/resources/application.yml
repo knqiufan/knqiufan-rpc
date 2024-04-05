@@ -1,0 +1,14 @@
+server:
+  port: 8084
+
+knrpc:
+  zkServer: 111.231.54.184:2182
+  zkRoot: knqiufan-rpc
+app:
+  id: app1
+  namespace: public
+  env: env
+logging:
+  level:
+    root: error
+    cn.knqiufan.rpc: debug

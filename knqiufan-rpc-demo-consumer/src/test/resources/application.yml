@@ -1,0 +1,16 @@
+server:
+  port: 8088
+knrpc:
+  providers: http://localhost:8081, http://localhost:8082, http://localhost:8083
+  zkServer: 111.231.54.184:2182
+  zkRoot: knqiufan-rpc
+app:
+  id: app1
+  namespace: knqiufan
+  env: dev
+
+
+logging:
+  level:
+    root: error
+    cn.knqiufan.rpc: info
