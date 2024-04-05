@@ -42,6 +42,10 @@ public class KnrpcException extends  RuntimeException{
     this.errorCode = errorCode;
   }
 
+  public KnrpcException(Throwable cause) {
+    super(cause);
+  }
+
   public KnrpcException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace, String errorCode) {
     super(message, cause, enableSuppression, writableStackTrace);
     this.errorCode = errorCode;

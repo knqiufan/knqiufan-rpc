@@ -1,5 +1,6 @@
 package cn.knqiufan.rpc.core.registry.zookeeper;
 
+import cn.knqiufan.rpc.core.api.KnrpcException;
 import cn.knqiufan.rpc.core.api.RegistryCenter;
 import cn.knqiufan.rpc.core.meta.InstanceMeta;
 import cn.knqiufan.rpc.core.meta.ServiceMeta;
@@ -70,7 +71,7 @@ public class ZkRegistryCenter implements RegistryCenter {
       log.info("=======> register to zookeeper: " + instancePath);
       client.create().withMode(CreateMode.EPHEMERAL).forPath(instancePath, "provider".getBytes());
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new KnrpcException(e);
     }
 
   }
@@ -90,7 +91,7 @@ public class ZkRegistryCenter implements RegistryCenter {
       log.info("=======> unregister to zookeeper: " + instancePath);
       client.delete().quietly().forPath(instancePath);
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new KnrpcException(e);
     }
   }
 
@@ -104,7 +105,7 @@ public class ZkRegistryCenter implements RegistryCenter {
       log.info("========> nodes: " + nodes);
       return mapInstance(nodes);
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new KnrpcException(e);
     }
   }
 
