@@ -1,9 +1,6 @@
 package cn.knqiufan.rpc.core.consumer;
 
-import cn.knqiufan.rpc.core.api.Filter;
-import cn.knqiufan.rpc.core.api.RpcContext;
-import cn.knqiufan.rpc.core.api.RpcRequest;
-import cn.knqiufan.rpc.core.api.RpcResponse;
+import cn.knqiufan.rpc.core.api.*;
 import cn.knqiufan.rpc.core.meta.InstanceMeta;
 import cn.knqiufan.rpc.core.util.MethodUtils;
 import cn.knqiufan.rpc.core.util.TypeUtils;
@@ -73,7 +70,10 @@ public class KnInvocationHandler implements InvocationHandler {
       // 处理各种类型，包括基本类型、数组类型、对象等。
       return TypeUtils.cast(rpcResponse.getData(), method.getReturnType());
     } else {
-      throw new RuntimeException(rpcResponse.getEx());
+      if (rpcResponse.getEx() instanceof KnrpcException ex) {
+        throw ex;
+      }
+      throw new KnrpcException(rpcResponse.getEx(), KnrpcException.UNKNOWN_EX);
     }
   }
 
