@@ -124,4 +124,10 @@ public class UserServiceImpl implements UserService {
   public int[] getIdsByIds(int[] i) {
     return i;
   }
+
+  @Override
+  public User ex(boolean flag) {
+    if(flag) throw new RuntimeException("just throw an exception");
+    return new User(100, "knqiufan");
+  }
 }

@@ -6,8 +6,8 @@ knrpc:
   zkRoot: knqiufan-rpc
 app:
   id: app1
-  namespace: public
-  env: env
+  namespace: knqiufan
+  env: dev
 logging:
   level:
     root: error

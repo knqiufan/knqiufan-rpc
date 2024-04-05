@@ -48,4 +48,6 @@ public interface UserService {
   long[] getLongIds();
 
   int[] getIdsByIds(int[] i);
+
+  User ex(boolean flag);
 }

@@ -16,6 +16,7 @@ public class KnrpcException extends  RuntimeException{
   // Z => unknown 异常
   public static final String SOCKET_TIMEOUT_EX = "X001-HTTP_INVOKE_TIMEOUT";
   public static final String NO_SUCH_METHOD_EX = "X002-METHOD_NO_EXISTS";
+  public static final String INVOKE_EX = "X003-INVOKE_EXCEPTION";
   public static final String UNKNOWN_EX = "Z001-UNKNOWN";
 
 

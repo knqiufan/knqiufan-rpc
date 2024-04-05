@@ -53,9 +53,9 @@ public class ProviderInvoker {
       rpcResponse.setData(result);
     } catch (InvocationTargetException e) {
       // 反射目标异常
-      rpcResponse.setEx(new KnrpcException(e.getTargetException().getMessage()));
+      rpcResponse.setEx(new KnrpcException(e.getTargetException().getMessage(), KnrpcException.INVOKE_EX));
     } catch (IllegalAccessException e) {
-      rpcResponse.setEx(new KnrpcException(e.getMessage()));
+      rpcResponse.setEx(new KnrpcException(e.getMessage(), KnrpcException.UNKNOWN_EX));
     }
     log.info("========> response: " + JSONObject.toJSONString(rpcResponse));
     return rpcResponse;

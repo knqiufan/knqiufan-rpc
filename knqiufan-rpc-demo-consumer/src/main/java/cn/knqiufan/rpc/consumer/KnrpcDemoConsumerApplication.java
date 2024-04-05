@@ -4,6 +4,7 @@ import cn.knqiufan.rpc.core.annotation.KnConsumer;
 import cn.knqiufan.rpc.core.consumer.ConsumerConfig;
 import cn.knqiufan.rpc.demo.api.pojo.User;
 import cn.knqiufan.rpc.demo.api.service.UserService;
+import org.junit.jupiter.api.Order;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationRunner;
@@ -47,6 +48,7 @@ public class KnrpcDemoConsumerApplication {
   }
 
   @Bean
+  @Order(value = Integer.MAX_VALUE)
   public ApplicationRunner consumerRunner() {
     return x -> {
       log.info("case1 ===> findById(int id): {}", userService.findById(1));
@@ -80,7 +82,7 @@ public class KnrpcDemoConsumerApplication {
         add(new User(3, "user"));
         add(new User(54, "identify"));
       }}));
-
+      log.info("case20 ===> userService.ex: {}", userService.ex(true));
 
     };
   }

@@ -13,4 +13,4 @@ app:
 logging:
   level:
     root: error
-    cn.knqiufan.rpc: info
+    cn.knqiufan.rpc: debug
