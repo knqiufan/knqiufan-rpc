@@ -70,7 +70,7 @@ public class KnInvocationHandler implements InvocationHandler {
 
         return castReturnResult(method, rpcResponse);
       } catch (Exception ex) {
-        if(!(ex.getCause() instanceof SocketTimeoutException)) {
+        if (!(ex.getCause() instanceof SocketTimeoutException)) {
           throw ex;
         }
       }
@@ -78,6 +78,13 @@ public class KnInvocationHandler implements InvocationHandler {
     return null;
   }
 
+  /**
+   * 返回结果处理
+   *
+   * @param method      方法
+   * @param rpcResponse 请求相应
+   * @return 处理后结果
+   */
   private static Object castReturnResult(Method method, RpcResponse<?> rpcResponse) {
     if (rpcResponse.isStatus()) {
       // 处理各种类型，包括基本类型、数组类型、对象等。
