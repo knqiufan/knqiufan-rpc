@@ -62,8 +62,8 @@ public class ConsumerConfig {
     return new OkHttpInvoker(timeout);
   }
 
-  @Bean
-  public CacheFilter cacheFilter() {
-    return new CacheFilter();
-  }
+  // @Bean
+  // public CacheFilter cacheFilter() {
+  //   return new CacheFilter();
+  // }
 }
