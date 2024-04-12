@@ -76,7 +76,7 @@ public class KnInvocationHandler implements InvocationHandler {
           rpcResponse = context.getHttpInvoker().post(rpcRequest, url);
         } catch (Exception e) {
           // 故障的规则统计和隔离
-          // 每一次异常，记录一次，统计 30s 的异常数
+          // 每一次异常，记录一次，统计 30s 的异常数据
           SlidingTimeWindow window = windows.get(url);
           if (window == null) {
             window = new SlidingTimeWindow();
@@ -84,7 +84,7 @@ public class KnInvocationHandler implements InvocationHandler {
           }
           window.record(System.currentTimeMillis());
           log.debug("instance {} in window with {}", url, window.getSum());
-          // 若发生了10次，就做故障隔离
+          // 若发生了10次，就故障隔离
           if(window.getSum() >=10){
             isolate(instance);
           }
