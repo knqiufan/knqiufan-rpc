@@ -1,5 +1,9 @@
 package cn.knqiufan.rpc.core.governance;
 
+import cn.knqiufan.rpc.core.consumer.KnInvocationHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * 滑动时间窗口
  *
@@ -8,6 +12,7 @@ package cn.knqiufan.rpc.core.governance;
  * @date 2024/4/9 0:48
  */
 public class SlidingTimeWindow {
+  private static final Logger log = LoggerFactory.getLogger(KnInvocationHandler.class);
 
   public static final int DEFAULT_SIZE = 30;
 
@@ -38,34 +43,34 @@ public class SlidingTimeWindow {
    * @param millis
    */
   public synchronized void record(long millis) {
-    System.out.println("window before: " + this.toString());
-    System.out.println("window.record(" + millis + ")");
+    log.debug("window before: " + this.toString());
+    log.debug("window.record(" + millis + ")");
     long ts = millis / 1000;
     if (_start_ts == -1L) {
       initRing(ts);
     } else {   // TODO  Prev 是否需要考虑
       if(ts == _curr_ts) {
-        System.out.println("window ts:" + ts + ", curr_ts:" + _curr_ts + ", size:" + size);
+        log.debug("window ts:" + ts + ", curr_ts:" + _curr_ts + ", size:" + size);
         this.ringBuffer.incr(_curr_mark, 1);
       } else if(ts > _curr_ts && ts < _curr_ts + size) {
         int offset = (int)(ts - _curr_ts);
-        System.out.println("window ts:" + ts + ", curr_ts:" + _curr_ts + ", size:" + size + ", offset:" + offset);
+        log.debug("window ts:" + ts + ", curr_ts:" + _curr_ts + ", size:" + size + ", offset:" + offset);
         this.ringBuffer.reset(_curr_mark + 1, offset);
         this.ringBuffer.incr(_curr_mark + offset, 1);
         _curr_ts = ts;
         _curr_mark = (_curr_mark + offset) % size;
       } else if(ts >= _curr_ts + size) {
-        System.out.println("window ts:" + ts + ", curr_ts:" + _curr_ts + ", size:" + size);
+        log.debug("window ts:" + ts + ", curr_ts:" + _curr_ts + ", size:" + size);
         this.ringBuffer.reset();
         initRing(ts);
       }
     }
     this.sum = this.ringBuffer.sum();
-    System.out.println("window after: " + this.toString());
+    log.debug("window after: " + this.toString());
   }
 
   private void initRing(long ts) {
-    System.out.println("window initRing ts:" + ts);
+    log.debug("window initRing ts:" + ts);
     this._start_ts  = ts;
     this._curr_ts   = ts;
     this._curr_mark = 0;
