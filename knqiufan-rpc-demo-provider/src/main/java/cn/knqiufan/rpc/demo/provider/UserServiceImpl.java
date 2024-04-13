@@ -7,10 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 用户测试类
@@ -127,14 +124,16 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public User ex(boolean flag) {
-    if(flag) throw new RuntimeException("just throw an exception");
+    if (flag) throw new RuntimeException("just throw an exception");
     return new User(100, "knqiufan");
   }
+
+  String timeoutPorts = "8081,8082,8083";
 
   @Override
   public User find(int timeout) {
     String port = environment.getProperty("server.port");
-    if("8081".equals(port)) {
+    if (Arrays.asList(timeoutPorts.split(",")).contains(port)) {
       try {
         Thread.sleep(timeout);
       } catch (InterruptedException e) {
@@ -142,5 +141,10 @@ public class UserServiceImpl implements UserService {
       }
     }
     return new User(2233, "knqiufan");
+  }
+
+  @Override
+  public void setTimeoutPorts(String timeoutPorts) {
+    this.timeoutPorts = timeoutPorts;
   }
 }

@@ -11,9 +11,13 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.net.SocketTimeoutException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 消费端的动态代理处理
@@ -28,10 +32,13 @@ public class KnInvocationHandler implements InvocationHandler {
 
   Class<?> service;
   RpcContext context;
-  List<InstanceMeta> providers;
+  final List<InstanceMeta> providers;
   // 隔离的服务提供者
-  List<InstanceMeta> isolateProviders;
-  Map<String ,SlidingTimeWindow> windows = new HashMap<>();
+  final List<InstanceMeta> isolateProviders = new ArrayList<>();
+  // 半开的服务提供者
+  final List<InstanceMeta> halfOpenProviders = new ArrayList<>();
+  ScheduledExecutorService executor;
+  Map<String, SlidingTimeWindow> windows = new HashMap<>();
 
   public KnInvocationHandler(Class<?> service,
                              RpcContext context,
@@ -39,6 +46,14 @@ public class KnInvocationHandler implements InvocationHandler {
     this.service = service;
     this.context = context;
     this.providers = providers;
+    this.executor = Executors.newScheduledThreadPool(1);
+    this.executor.scheduleWithFixedDelay(this::halfOpen, 10, 60, TimeUnit.SECONDS);
+  }
+
+  private void halfOpen() {
+    log.debug(" ====> half open isolateProviders: {}", isolateProviders);
+    halfOpenProviders.clear();
+    halfOpenProviders.addAll(isolateProviders);
   }
 
   @Override
@@ -66,7 +81,21 @@ public class KnInvocationHandler implements InvocationHandler {
             return castReturnResult(method, preResponse);
           }
         }
-        InstanceMeta instance = getInstanceMeta();
+
+        // 探活
+        InstanceMeta instance;
+        synchronized (halfOpenProviders) {
+          // 若半开的服务提供者为空，则直接从可用的服务提供者中获取
+          if (halfOpenProviders.isEmpty()) {
+            instance = getInstanceMeta();
+          } else {
+            // 若半开的服务提供者不为空，则从半开的服务提供者中获取进行探活
+            instance = halfOpenProviders.remove(0);
+            log.debug("check alive instance ====> {}", instance);
+          }
+        }
+
+
         log.debug("loadBalancer.choose(instances) ====> {}", instance);
 
         RpcResponse<?> rpcResponse;
@@ -85,12 +114,20 @@ public class KnInvocationHandler implements InvocationHandler {
           window.record(System.currentTimeMillis());
           log.debug("instance {} in window with {}", url, window.getSum());
           // 若发生了10次，就故障隔离
-          if(window.getSum() >=10){
+          if (window.getSum() >= 10) {
             isolate(instance);
           }
           throw e;
         }
 
+        synchronized (providers) {
+          // 如果调用成功，表示探活成功
+          if (!providers.contains(instance)) {
+            isolateProviders.remove(instance);
+            providers.add(instance);
+            log.debug("instance {} is recovered, isolateProviders={}, providers={}", instance, isolateProviders, providers);
+          }
+        }
         // TODO：后置处理，拿到的可能不是最终值，需要再设计一下
         for (Filter filter : context.getFilters()) {
           rpcResponse = filter.postFilter(rpcRequest, rpcResponse);
