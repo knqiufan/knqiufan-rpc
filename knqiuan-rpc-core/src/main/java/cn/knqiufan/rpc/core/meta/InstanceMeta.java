@@ -43,6 +43,18 @@ public class InstanceMeta {
     this.context = context;
   }
 
+  @Override
+  public String toString() {
+    return "InstanceMeta{" +
+            "scheme='" + scheme + '\'' +
+            ", host='" + host + '\'' +
+            ", port=" + port +
+            ", context='" + context + '\'' +
+            ", status=" + status +
+            ", parameters=" + parameters +
+            '}';
+  }
+
   public String getScheme() {
     return scheme;
   }
